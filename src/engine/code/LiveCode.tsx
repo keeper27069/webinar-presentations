@@ -45,6 +45,17 @@ export function guardLoops(js: string): string {
   return js.replace(/\b(for|while)\s*\(((?:[^()]|\([^()]*\))*)\)\s*\{/g, (_m, kw, cond) => `${kw} (${cond}) { if (++__lg > 10000) throw new Error('${GUARD}');`);
 }
 
+/**
+ * The preview runs in an opaque-origin sandbox where the real localStorage throws.
+ * A small shim keeps the data here, in the presenter page, so it survives ▶ Run
+ * (which recreates the frame — just like a page reload) and works offline.
+ */
+const STORE: Record<string, string> = {};
+const LS_SHIM = `var __s=__STORE__;function __p(){parent.postMessage({__lc:ch,type:'__ls',store:__s},'*')}
+var __ls={getItem:function(k){k=String(k);return Object.prototype.hasOwnProperty.call(__s,k)?__s[k]:null},setItem:function(k,v){__s[String(k)]=String(v);__p()},removeItem:function(k){delete __s[String(k)];__p()},clear:function(){Object.keys(__s).forEach(function(k){delete __s[k]});__p()},key:function(i){var a=Object.keys(__s);return i<a.length?a[i]:null}};
+Object.defineProperty(__ls,'length',{get:function(){return Object.keys(__s).length}});
+try{Object.defineProperty(window,'localStorage',{value:__ls,configurable:true})}catch(e){}`;
+
 function buildDoc(files: CodeFiles, channel: string) {
   const js = files.js ? guardLoops(files.js) : '';
   return `<!doctype html><html><head><meta charset="utf-8"><style>
@@ -54,7 +65,8 @@ ${files.css ?? ''}</style></head><body>${files.html ?? ''}
 <script>(function(){var ch=${JSON.stringify(channel)};function f(v){if(typeof v==='string')return v;try{return JSON.stringify(v)}catch(e){return String(v)}}
 function send(t,a){parent.postMessage({__lc:ch,type:t,text:Array.prototype.map.call(a,f).join(' ')},'*')}
 console.log=function(){send('log',arguments)};console.info=console.log;console.warn=console.log;console.error=function(){send('error',arguments)};
-window.onerror=function(m){var s=String(m);send(s.indexOf('${GUARD}')>=0?'guard':'error',[s.replace('Uncaught ','')]);return true};})();</script>
+window.onerror=function(m){var s=String(m);send(s.indexOf('${GUARD}')>=0?'guard':'error',[s.replace('Uncaught ','')]);return true};
+${LS_SHIM.replace('__STORE__', JSON.stringify(STORE).replace(/</g, '\\u003c'))}})();</script>
 <script>let __lg=0;
 ${js}</script></body></html>`;
 }
@@ -82,8 +94,13 @@ export function LiveCode({ files, steps, name = 'live', console: showConsole, pr
   // Collect console output from the sandbox
   useEffect(() => {
     const onMsg = (e: MessageEvent) => {
-      const d = e.data as { __lc?: string; type: LogLine['type']; text: string };
+      const d = e.data as { __lc?: string; type: LogLine['type'] | '__ls'; text: string; store?: Record<string, string> };
       if (!d || d.__lc !== channel) return;
+      if (d.type === '__ls') {
+        Object.keys(STORE).forEach((k) => delete STORE[k]);
+        Object.assign(STORE, d.store ?? {});
+        return;
+      }
       setLogs((l) => [...l, { type: d.type, text: d.text }].slice(-300));
     };
     window.addEventListener('message', onMsg);

@@ -70,6 +70,12 @@ const READY: Record<string, { load: LessonMeta['load']; minutes: number }> = {
   'js-g04': { load: () => import('./js/testers'), minutes: 44 },
   'js-g05': { load: () => import('./js/delivery-app'), minutes: 44 },
   'js-g06': { load: () => import('./js/open-source'), minutes: 43 },
+  'js-t01': { load: () => import('./js/variables-types'), minutes: 42 },
+  'js-t02': { load: () => import('./js/conditionals'), minutes: 42 },
+  'js-t04': { load: () => import('./js/functions'), minutes: 43 },
+  'js-t05': { load: () => import('./js/dom'), minutes: 39 },
+  'js-t06': { load: () => import('./js/todo-list'), minutes: 46 },
+  'js-t07': { load: () => import('./js/localstorage'), minutes: 42 },
   // </kit>
 };
 
