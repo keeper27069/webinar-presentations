@@ -1,0 +1,66 @@
+export interface UiStrings {
+  brandTagline: string;
+  homeTitle: string;
+  homeLead: string;
+  search: string;
+  searchEmpty: string;
+  readyOf: (ready: number, total: number) => string;
+  general: string;
+  generalHint: string;
+  technical: string;
+  technicalHint: string;
+  ready: string;
+  soon: string;
+  scenes: (n: number) => string;
+  minutes: (n: number) => string;
+  backToCatalog: string;
+  open: string;
+  modules: Record<'html' | 'css' | 'bootstrap' | 'tilda-git' | 'js' | 'react', string>;
+  // Player
+  chatPrefix: string;
+  next: string;
+  prev: string;
+  hint: string;
+  reset: string;
+  resetLesson: string;
+  overview: string;
+  presenter: string;
+  notes: string;
+  notesWarning: string;
+  start: string;
+  check: string;
+  reveal: string;
+  tryAgain: string;
+  step: string;
+  play: string;
+  pause: string;
+  run: string;
+  deeper: string;
+  loading: string;
+  notFound: string;
+  // Presenter
+  presenterTitle: string;
+  presenterOffline: string;
+  sayLabel: string;
+  askChatLabel: string;
+  expectLabel: string;
+  answerLabel: string;
+  switchToLabel: string;
+  nextScene: string;
+  sceneTimer: string;
+  totalTimer: string;
+  planned: string;
+  // Components
+  addIdea: string;
+  addIdeaPlaceholder: string;
+  suggestExamples: string;
+  correct: string;
+  wrong: string;
+  lineOk: string;
+  console: string;
+  preview: string;
+  loopGuard: string;
+  chatGuesses: string;
+  allDone: string;
+  keyboardHelp: string;
+}

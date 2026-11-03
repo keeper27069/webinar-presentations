@@ -1,0 +1,45 @@
+:root {
+  /* Lab palette */
+  --bg: #0a0f2e;
+  --bg-2: #111850;
+  --bg-3: #1a2266;
+  --line: rgba(160, 175, 255, 0.18);
+  --text: #eef1ff;
+  --muted: #aab3ea;
+  --surface: #f5f7ff;
+  --surface-2: #e6eaff;
+  --ink: #0d1238;
+  --ink-muted: #4a5288;
+
+  --violet: #7c5cff;
+  --blue: #3d7bff;
+  --cyan: #3ee6ff;
+  --pink: #ff5cc8;
+  --error: #ff6b6b;
+  --ok: #2ee59d;
+  --warn: #ffd166;
+
+  --accent: var(--violet);
+  --accent-ink: #0d1238;
+
+  --font-display: 'Unbounded', 'Manrope', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, sans-serif;
+  --font-code: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Sizes on the 1920×1080 stage */
+  --fs-body: 32px;
+  --fs-small: 26px;
+  --fs-title: 72px;
+  --fs-h2: 44px;
+  --fs-code: 28px;
+  --radius: 28px;
+  --radius-sm: 18px;
+  --shadow: 0 24px 60px rgba(3, 6, 30, 0.45);
+}
+
+[data-module='html'] { --accent: #ff8a3d; }
+[data-module='css'] { --accent: #4d94ff; }
+[data-module='bootstrap'] { --accent: #a07bff; }
+[data-module='tilda-git'] { --accent: #22d3c5; }
+[data-module='js'] { --accent: #ffd43b; }
+[data-module='react'] { --accent: #5ee7ff; }
