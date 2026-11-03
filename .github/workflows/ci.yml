@@ -11,17 +11,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: 22
       - run: npm install
       - run: npm run typecheck
       - run: npm run build
-      - name: Smoke test (all ready lessons, 3 languages)
+      - name: Smoke test (changed lessons, 3 languages)
+        env:
+          BEFORE: ${{ github.event.before || github.event.pull_request.base.sha || 'HEAD~1' }}
         run: |
           npm i --no-save playwright
           npx playwright install --with-deps chromium
-          npm run smoke -- all
+          npm run smoke -- all --since="$BEFORE"
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v5

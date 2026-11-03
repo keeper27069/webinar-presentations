@@ -13,7 +13,7 @@
  * Screenshots: .smoke/<lessonId>/<lang>-<scene>-<step|after>.png
  * Requires Playwright: npm i -D playwright && npx playwright install chromium
  */
-import { spawn } from 'node:child_process';
+import { execSync, spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { chromium } from 'playwright';
@@ -27,12 +27,31 @@ const shots = !args.includes('--no-shots');
 const topics = readFileSync(new URL('../src/lessons/topics.ts', import.meta.url), 'utf8');
 const registry = readFileSync(new URL('../src/lessons/registry.ts', import.meta.url), 'utf8');
 const ready = [...registry.matchAll(/'([a-z-]+-[gt]\d+)':\s*\{\s*load/g)].map((m) => m[1]);
+// --since=<git ref>: only lessons whose files changed (engine/styles/scripts change → every lesson, uz only)
+const since = args.find((a) => a.startsWith('--since='))?.split('=')[1];
+let changed = null;
+if (since && !/^0+$/.test(since)) {
+  try {
+    const files = execSync(`git diff --name-only ${since} HEAD`, { encoding: 'utf8' }).split('\n').filter(Boolean);
+    const core = files.some((f) => /^(src\/(engine|styles|app|i18n|catalog)|scripts|package)/.test(f));
+    changed = core ? 'core' : new Set(files.filter((f) => f.startsWith('src/lessons/')));
+    console.log(core ? 'core files changed → all lessons (uz)' : `changed lesson files: ${[...changed].join(', ') || 'none'}`);
+  } catch (e) {
+    console.log(`--since ignored: ${e.message.split('\n')[0]}`);
+  }
+}
+if (changed === 'core' && !args.some((a) => a.startsWith('--lang='))) langs.splice(0, langs.length, 'uz');
 const lessons = ready
   .filter((id) => target === 'all' || id === target)
   .map((id) => {
     const m = new RegExp(`\\['${id}',\\s*'([^']+)'`).exec(topics);
     return { id, module: id.replace(/-[gt]\d+$/, ''), slug: m?.[1] };
-  });
+  })
+  .filter((l) => !(changed instanceof Set) || [...changed].some((f) => f.startsWith(`src/lessons/${l.module}/${l.slug}`)));
+if (changed instanceof Set && !lessons.length) {
+  console.log('no lesson changed — nothing to smoke');
+  process.exit(0);
+}
 if (!lessons.length) {
   console.error(`No ready lesson "${target}". Ready: ${ready.join(', ')}`);
   process.exit(2);
@@ -152,7 +171,7 @@ for (const l of lessons) {
     const file = existsSync(kitFile)
       ? readFileSync(kitFile, 'utf8')
       : readFileSync(new URL(`../src/lessons/${l.module}/${l.slug}/content/${lang}.ts`, import.meta.url), 'utf8');
-    const minutes = [...file.matchAll(/(?:minutes|min):\s*(\d+),?\s*\n\s*\}/g)].map((m) => +m[1]);
+    const minutes = [...file.matchAll(/\b(?:minutes|min):\s*(\d+)\s*,?\s*\}/g)].map((m) => +m[1]);
     if (minutes.some((m) => m <= 0)) errors.push(`${l.id}/${lang}: scene with minutes <= 0`);
     console.log(`${l.id}/${lang}: ${minutes.length} scenes with notes, ${minutes.reduce((a, b) => a + b, 0)} min planned`);
   }

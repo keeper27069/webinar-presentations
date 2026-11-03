@@ -47,7 +47,7 @@ function useK<T extends KitScene>(): T {
   return useSceneText() as unknown as T;
 }
 
-const fmt = (v: number) => (Math.abs(v) < 10 && v % 1 ? v.toFixed(1) : Math.round(v).toLocaleString('ru-RU'));
+const fmt = (v: number) => (Math.abs(v) < 10 && v % 1 ? v.toFixed(1) : Math.abs(v) >= 10000 ? Math.round(v).toLocaleString('ru-RU') : String(Math.round(v)));
 
 /* ───────── intro ───────── */
 function Intro() {
@@ -403,6 +403,12 @@ function Terminal() {
 }
 
 /* ───────── code walkthrough ───────── */
+function walkFont(code: string) {
+  const lines = code.split('\n');
+  const base = lines.length > 14 ? 22 : 26;
+  const longest = Math.max(...lines.map((l) => l.length));
+  return Math.max(18, Math.min(base, Math.floor(1040 / (longest * 0.62))));
+}
 function Walk() {
   const s = useK<WalkScene>();
   const [step] = useStep();
@@ -412,7 +418,7 @@ function Walk() {
     <SceneFrame variant="code" showTakeaway={cur === s.marks.length - 1}>
       <div className="row" style={{ height: '100%', gap: 32, alignItems: 'flex-start' }}>
         <div className="fill" style={{ minWidth: 0 }}>
-          <CodeBlock code={s.code} lang={s.lang} activeLine={mark.line} fontSize={s.code.split('\n').length > 14 ? 22 : 26} />
+          <CodeBlock code={s.code} lang={s.lang} activeLine={mark.line} fontSize={walkFont(s.code)} />
         </div>
         <AnimatePresence mode="wait">
           <motion.div key={cur} className="glass kit-note" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}>
