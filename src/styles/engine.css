@@ -1139,10 +1139,16 @@
   gap: 12px;
 }
 .live__cmwrap {
+  position: relative;
   flex: 1;
   min-height: 160px;
+  overflow: hidden;
+  font-size: 26px;
 }
-.live__cmwrap .live__cm,
+.live__cmwrap .live__cm {
+  position: absolute;
+  inset: 0;
+}
 .live__cmwrap .cm-editor {
   height: 100%;
 }
@@ -1174,7 +1180,7 @@
 .live__cm {
   border-radius: 0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
   overflow: hidden;
-  font-size: 26px;
+  font-size: inherit;
 }
 .live__cm .cm-editor {
   font-family: var(--font-code);

@@ -21,6 +21,19 @@ const READY: Record<string, { load: LessonMeta['load']; minutes: number }> = {
   'html-t02': { load: () => import('./html/file-paths'), minutes: 34 },
   'html-t03': { load: () => import('./html/emmet'), minutes: 37 },
   'html-t04': { load: () => import('./html/nesting'), minutes: 37 },
+  'css-g01': { load: () => import('./css/usable-interfaces'), minutes: 46 },
+  'css-g02': { load: () => import('./css/devtools-youtube'), minutes: 49 },
+  'css-g03': { load: () => import('./css/project-presentation'), minutes: 41 },
+  'css-g04': { load: () => import('./css/figma-to-site'), minutes: 43 },
+  'css-g05': { load: () => import('./css/client-beautiful-site'), minutes: 43 },
+  'css-g06': { load: () => import('./css/programming-languages'), minutes: 48 },
+  'css-g07': { load: () => import('./css/ai-image-generation'), minutes: 46 },
+  'css-g08': { load: () => import('./css/how-programmers-earn'), minutes: 40 },
+  'css-g10': { load: () => import('./css/google-seo'), minutes: 44 },
+  'css-t01': { load: () => import('./css/media-queries'), minutes: 35 },
+  'css-t02': { load: () => import('./css/css-grid'), minutes: 36 },
+  'css-t03': { load: () => import('./css/animations'), minutes: 35 },
+  'css-t04': { load: () => import('./css/css-variables'), minutes: 34 },
   // </kit>
 };
 

@@ -318,7 +318,7 @@ function TrueFalse() {
               <span className="kit-tf__num">{i + 1}</span>
               <span className="kit-tf__text">
                 <b>{st.text}</b>
-                {on && (
+                {on && shown[shown.length - 1] === i && (
                   <motion.span className="kit-tf__explain" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     {st.explain}
                   </motion.span>
@@ -511,7 +511,10 @@ function Browser() {
                 {(t.css ? `<style>\n${t.css.trim()}\n</style>\n` : '') + t.html.trim()}
               </pre>
             ) : (
-              <iframe key={tab} title={t.label} sandbox="" srcDoc={doc} className="kit-browser__frame" />
+              <div className="kit-browser__stage">
+                {t.width && <span className="kit-browser__width">{t.width}px</span>}
+                <iframe key={tab} title={t.label} sandbox="" srcDoc={doc} className="kit-browser__frame" style={t.width ? { width: t.width, flex: 'none' } : undefined} />
+              </div>
             )}
           </div>
           {t.note && (

@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
-import CodeMirror from '@uiw/react-codemirror';
+import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { html as htmlLang } from '@codemirror/lang-html';
 import { css as cssLang } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
@@ -59,6 +59,12 @@ window.onerror=function(m){var s=String(m);send(s.indexOf('${GUARD}')>=0?'guard'
 ${js}</script></body></html>`;
 }
 
+/** Smaller editor font for long files so more fits on the stream frame */
+function cmFont(src: string) {
+  const lines = src.split('\n').length;
+  return lines > 16 ? 20 : lines > 11 ? 23 : 26;
+}
+
 export function LiveCode({ files, steps, name = 'live', console: showConsole, preview = true, editorHeight = 560, task }: Props) {
   const ui = useUi();
   const channel = useId();
@@ -104,7 +110,7 @@ export function LiveCode({ files, steps, name = 'live', console: showConsole, pr
     setRunId((r) => r + 1);
   };
 
-  const exts = useMemo(() => ({ html: [htmlLang()], css: [cssLang()], js: [javascript()] }), []);
+  const exts = useMemo(() => ({ html: [htmlLang(), EditorView.lineWrapping], css: [cssLang(), EditorView.lineWrapping], js: [javascript(), EditorView.lineWrapping] }), []);
 
   return (
     <div className={`live ${preview ? '' : 'live--no-preview'}`}>
@@ -134,7 +140,7 @@ export function LiveCode({ files, steps, name = 'live', console: showConsole, pr
             ↺
           </button>
         </div>
-        <div className="live__cmwrap" style={{ maxHeight: editorHeight }}>
+        <div className="live__cmwrap" data-allow-overflow style={{ maxHeight: editorHeight, fontSize: cmFont(code[tab] ?? '') }}>
         <CodeMirror
           value={code[tab] ?? ''}
           height="100%"

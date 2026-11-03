@@ -136,7 +136,8 @@ export interface BugsScene extends Base {
 }
 export interface BrowserScene extends Base {
   type: 'browser';
-  tabs: { label: string; url: string; html: string; css?: string; note?: string }[];
+  /** width: emulate a device width in px (media queries react to it) */
+  tabs: { label: string; url: string; html: string; css?: string; note?: string; width?: number }[];
 }
 export interface NumbersScene extends Base {
   type: 'numbers';
