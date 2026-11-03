@@ -63,7 +63,7 @@ function Intro() {
           {s.kicker && <div className="kit-kicker">{s.kicker}</div>}
           <AnimatePresence mode="wait">
             {step >= 1 ? (
-              <motion.h2 key="lead" className="kit-intro__lead" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <motion.h2 key="lead" className={`kit-intro__lead${s.lead.length > 240 ? ' is-denser' : s.lead.length > 170 ? ' is-dense' : ''}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                 {s.lead}
               </motion.h2>
             ) : (

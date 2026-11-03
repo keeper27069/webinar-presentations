@@ -28,6 +28,8 @@
 }
 .kit-intro__text { display: flex; flex-direction: column; gap: 24px; min-width: 0; flex: 1; }
 .kit-intro__lead { margin: 0; font-family: var(--font-display); font-size: 54px; line-height: 1.2; }
+.kit-intro__lead.is-dense { font-size: 46px; }
+.kit-intro__lead.is-denser { font-size: 40px; }
 .kit-intro__tease { display: flex; align-items: center; gap: 24px; font-size: 64px; color: var(--muted); }
 .kit-intro__facts { display: flex; gap: 18px; }
 .kit-fact { flex: 1; padding: 18px 22px; font-size: 26px; font-weight: 700; line-height: 1.3; }
