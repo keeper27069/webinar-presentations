@@ -62,4 +62,9 @@ export default {
   chatGuesses: 'Chat taxminlari',
   allDone: 'Hammasi tayyor!',
   keyboardHelp: '→ keyingi · ← orqaga · R qaytadan · H yordam · O sahnalar · P boshlovchi · F toʻliq ekran',
+  truth: 'Haqiqat',
+  myth: 'Afsona',
+  showCode: 'Kod',
+  showPage: 'Sahifa',
+  tapToFlip: 'ochish uchun bosing',
 } satisfies UiStrings;

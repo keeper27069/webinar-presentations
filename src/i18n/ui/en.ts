@@ -62,4 +62,9 @@ export default {
   chatGuesses: 'Chat guesses',
   allDone: 'All done!',
   keyboardHelp: '→ next · ← back · R reset · H hint · O scenes · P presenter · F fullscreen',
+  truth: 'True',
+  myth: 'Myth',
+  showCode: 'Code',
+  showPage: 'Page',
+  tapToFlip: 'click to open',
 } satisfies UiStrings;

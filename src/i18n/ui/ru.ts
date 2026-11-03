@@ -62,4 +62,9 @@ export default {
   chatGuesses: 'Версии чата',
   allDone: 'Всё готово!',
   keyboardHelp: '→ далее · ← назад · R сброс · H подсказка · O сцены · P ведущий · F весь экран',
+  truth: 'Правда',
+  myth: 'Миф',
+  showCode: 'Код',
+  showPage: 'Страница',
+  tapToFlip: 'нажмите, чтобы открыть',
 } satisfies UiStrings;

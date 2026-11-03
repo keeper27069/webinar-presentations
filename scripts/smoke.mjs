@@ -14,7 +14,7 @@
  * Requires Playwright: npm i -D playwright && npx playwright install chromium
  */
 import { spawn } from 'node:child_process';
-import { mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { chromium } from 'playwright';
 
@@ -147,9 +147,12 @@ for (const l of lessons) {
     await page.close();
   }
   // Notes completeness (content files)
+  const kitFile = new URL(`../src/lessons/${l.module}/${l.slug}.ts`, import.meta.url);
   for (const lang of langs) {
-    const file = readFileSync(new URL(`../src/lessons/${l.module}/${l.slug}/content/${lang}.ts`, import.meta.url), 'utf8');
-    const minutes = [...file.matchAll(/minutes:\s*(\d+)/g)].map((m) => +m[1]);
+    const file = existsSync(kitFile)
+      ? readFileSync(kitFile, 'utf8')
+      : readFileSync(new URL(`../src/lessons/${l.module}/${l.slug}/content/${lang}.ts`, import.meta.url), 'utf8');
+    const minutes = [...file.matchAll(/(?:minutes|min):\s*(\d+),?\s*\n\s*\}/g)].map((m) => +m[1]);
     if (minutes.some((m) => m <= 0)) errors.push(`${l.id}/${lang}: scene with minutes <= 0`);
     console.log(`${l.id}/${lang}: ${minutes.length} scenes with notes, ${minutes.reduce((a, b) => a + b, 0)} min planned`);
   }

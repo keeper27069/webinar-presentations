@@ -10,6 +10,7 @@ import '@fontsource/jetbrains-mono/700.css';
 import './styles/global.css';
 import './styles/engine.css';
 import './styles/catalog.css';
+import './styles/kit.css';
 import { App } from './app/App';
 
 createRoot(document.getElementById('root')!).render(

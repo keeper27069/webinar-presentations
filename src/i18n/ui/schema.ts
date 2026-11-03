@@ -63,4 +63,10 @@ export interface UiStrings {
   chatGuesses: string;
   allDone: string;
   keyboardHelp: string;
+  // Kit scenes
+  truth: string;
+  myth: string;
+  showCode: string;
+  showPage: string;
+  tapToFlip: string;
 }
