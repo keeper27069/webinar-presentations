@@ -109,7 +109,8 @@ export function LiveCode({ files, steps, name = 'live', console: showConsole, pr
         Object.assign(STORE, d.store ?? {});
         return;
       }
-      setLogs((l) => [...l, { type: d.type, text: d.text }].slice(-300));
+      const line: LogLine = { type: d.type, text: d.text };
+      setLogs((l) => [...l, line].slice(-300));
     };
     window.addEventListener('message', onMsg);
     return () => window.removeEventListener('message', onMsg);
