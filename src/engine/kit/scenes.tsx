@@ -596,17 +596,20 @@ function Mission() {
 /* ───────── finale ───────── */
 function Finale() {
   const s = useK<FinaleScene>();
+  // Long summaries get a denser type scale so they never spill out of the stage
+  const size = s.answer.length + s.homework.join('').length;
+  const dense = size > 480 ? ' is-denser' : size > 380 ? ' is-dense' : '';
   return (
     <SceneFrame showTakeaway>
-      <div className="row" style={{ height: '100%', gap: 48, alignItems: 'center' }}>
+      <div className={`row kit-finale${dense}`} style={{ height: '100%', gap: 48, alignItems: 'center' }}>
         <div className="col fill" style={{ gap: 24, minWidth: 0 }}>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="kit-answer">
             {s.answer}
           </motion.p>
           <div className="glass col" style={{ gap: 8 }}>
-            <b style={{ fontSize: 28 }}>🏠 {s.homeworkTitle}</b>
+            <b className="kit-finale__hwtitle">🏠 {s.homeworkTitle}</b>
             {s.homework.map((h, i) => (
-              <span key={i} style={{ fontSize: 26 }}>
+              <span key={i} className="kit-finale__hw">
                 {i + 1}. {h}
               </span>
             ))}
