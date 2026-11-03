@@ -76,6 +76,12 @@ const READY: Record<string, { load: LessonMeta['load']; minutes: number }> = {
   'js-t05': { load: () => import('./js/dom'), minutes: 39 },
   'js-t06': { load: () => import('./js/todo-list'), minutes: 46 },
   'js-t07': { load: () => import('./js/localstorage'), minutes: 42 },
+  'react-g01': { load: () => import('./react/game-ai-enemies'), minutes: 43 },
+  'react-g02': { load: () => import('./react/game-physics'), minutes: 46 },
+  'react-g03': { load: () => import('./react/viruses-antivirus'), minutes: 43 },
+  'react-g04': { load: () => import('./react/cookies'), minutes: 39 },
+  'react-g05': { load: () => import('./react/inside-smartphone'), minutes: 39 },
+  'react-g06': { load: () => import('./react/cross-device-apps'), minutes: 39 },
   // </kit>
 };
 

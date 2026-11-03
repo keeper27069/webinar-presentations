@@ -124,6 +124,8 @@ export interface LiveScene extends Base {
   task?: string;
   /** Console-only (JS) instead of a page preview */
   console?: boolean;
+  /** JS is React + JSX (React 19 runtime from public/vendor/react-live.js) */
+  react?: boolean;
   steps: { label: string; html?: string; css?: string; js?: string }[];
 }
 export interface OutputScene extends Base {

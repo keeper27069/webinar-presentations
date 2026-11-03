@@ -30,6 +30,8 @@ interface Props {
   editorHeight?: number;
   /** Shown above the editor */
   task?: ReactNode;
+  /** JS is React + JSX: runs through public/vendor/react-live.js (React 19 + JSX transform) */
+  react?: boolean;
 }
 
 type Tab = keyof CodeFiles;
@@ -56,7 +58,7 @@ var __ls={getItem:function(k){k=String(k);return Object.prototype.hasOwnProperty
 Object.defineProperty(__ls,'length',{get:function(){return Object.keys(__s).length}});
 try{Object.defineProperty(window,'localStorage',{value:__ls,configurable:true})}catch(e){}`;
 
-function buildDoc(files: CodeFiles, channel: string) {
+function buildDoc(files: CodeFiles, channel: string, react = false) {
   const js = files.js ? guardLoops(files.js) : '';
   return `<!doctype html><html><head><meta charset="utf-8"><style>
 html,body{margin:0;font-family:Manrope,system-ui,sans-serif;font-size:22px;color:#0d1238;background:#fff}
@@ -67,8 +69,14 @@ function send(t,a){parent.postMessage({__lc:ch,type:t,text:Array.prototype.map.c
 console.log=function(){send('log',arguments)};console.info=console.log;console.warn=console.log;console.error=function(){send('error',arguments)};
 window.onerror=function(m){var s=String(m);send(s.indexOf('${GUARD}')>=0?'guard':'error',[s.replace('Uncaught ','')]);return true};
 ${LS_SHIM.replace('__STORE__', JSON.stringify(STORE).replace(/</g, '\\u003c'))}})();</script>
-<script>let __lg=0;
-${js}</script></body></html>`;
+${react ? reactScripts(js) : `<script>let __lg=0;\n${js}</script>`}</body></html>`;
+}
+
+/** React lessons: load the vendored runtime, transform JSX, then run the code */
+function reactScripts(js: string) {
+  const src = JSON.stringify(js).replace(/</g, '\\u003c');
+  return `<script src="${window.location.origin}/vendor/react-live.js"></script>
+<script>let __lg=0;try{if(!window.__jsx)throw new Error('React runtime did not load');(0,eval)(window.__jsx(${src}))}catch(e){if(e&&e.description){console.error('JSX, line '+e.lineNumber+': '+e.description)}else{throw e}}</script>`;
 }
 
 /** Smaller editor font for long files so more fits on the stream frame */
@@ -77,14 +85,14 @@ function cmFont(src: string) {
   return lines > 16 ? 20 : lines > 11 ? 23 : 26;
 }
 
-export function LiveCode({ files, steps, name = 'live', console: showConsole, preview = true, editorHeight = 560, task }: Props) {
+export function LiveCode({ files, steps, name = 'live', console: showConsole, preview = true, editorHeight = 560, task, react = false }: Props) {
   const ui = useUi();
   const channel = useId();
   const [code, setCode] = useSceneState<CodeFiles>(`${name}:code`, files);
   const tabs = (['html', 'css', 'js'] as Tab[]).filter((t) => code[t] !== undefined);
   const [tab, setTab] = useState<Tab>(tabs.includes('js') ? 'js' : tabs[0]);
   const [stepIdx, setStepIdx] = useSceneState<number>(`${name}:step`, -1);
-  const [doc, setDoc] = useState(() => buildDoc(code, channel));
+  const [doc, setDoc] = useState(() => buildDoc(code, channel, react));
   const [logs, setLogs] = useState<LogLine[]>([]);
   const [runId, setRunId] = useState(0);
   const hasJs = code.js !== undefined;
@@ -116,18 +124,18 @@ export function LiveCode({ files, steps, name = 'live', console: showConsole, pr
   const visualKey = `${code.html ?? ''}\u0000${code.css ?? ''}`;
   useEffect(() => {
     if (hasJs) return;
-    const t = window.setTimeout(() => setDoc(buildDoc(code, channel)), 350);
+    const t = window.setTimeout(() => setDoc(buildDoc(code, channel, react)), 350);
     return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visualKey]);
 
   const run = () => {
     setLogs([]);
-    setDoc(buildDoc(code, channel));
+    setDoc(buildDoc(code, channel, react));
     setRunId((r) => r + 1);
   };
 
-  const exts = useMemo(() => ({ html: [htmlLang(), EditorView.lineWrapping], css: [cssLang(), EditorView.lineWrapping], js: [javascript(), EditorView.lineWrapping] }), []);
+  const exts = useMemo(() => ({ html: [htmlLang(), EditorView.lineWrapping], css: [cssLang(), EditorView.lineWrapping], js: [javascript({ jsx: react }), EditorView.lineWrapping] }), [react]);
 
   return (
     <div className={`live ${preview ? '' : 'live--no-preview'}`}>
@@ -178,7 +186,7 @@ export function LiveCode({ files, steps, name = 'live', console: showConsole, pr
                   setStepIdx(i);
                   setCode(s.files);
                   setLogs([]);
-                  if (s.files.js !== undefined) window.setTimeout(() => setDoc(buildDoc(s.files, channel)), 0);
+                  if (s.files.js !== undefined) window.setTimeout(() => setDoc(buildDoc(s.files, channel, react)), 0);
                 }}
               >
                 {i + 1}. {s.label}

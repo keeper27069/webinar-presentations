@@ -443,6 +443,7 @@ function Live() {
       <LiveCode
         name="live"
         preview={!s.console}
+        react={s.react}
         task={s.task}
         editorHeight={440}
         files={files(s.steps[0])}
