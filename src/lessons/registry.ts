@@ -50,6 +50,13 @@ const READY: Record<string, { load: LessonMeta['load']; minutes: number }> = {
   'bootstrap-t03': { load: () => import('./bootstrap/tooltip-popover-toast'), minutes: 37 },
   'bootstrap-t04': { load: () => import('./bootstrap/icons-drawer'), minutes: 35 },
   'bootstrap-t05': { load: () => import('./bootstrap/scrollspy-stepper'), minutes: 33 },
+  'tilda-git-g01': { load: () => import('./tilda-git/client-brief'), minutes: 41 },
+  'tilda-git-g02': { load: () => import('./tilda-git/how-games-are-made'), minutes: 42 },
+  'tilda-git-g03': { load: () => import('./tilda-git/team-development'), minutes: 39 },
+  'tilda-git-g04': { load: () => import('./tilda-git/how-google-search-works'), minutes: 36 },
+  'tilda-git-g05': { load: () => import('./tilda-git/databases'), minutes: 40 },
+  'tilda-git-g06': { load: () => import('./tilda-git/ai-tools-for-devs'), minutes: 41 },
+  'tilda-git-g07': { load: () => import('./tilda-git/trusting-ai-code'), minutes: 43 },
   // </kit>
 };
 
