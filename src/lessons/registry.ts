@@ -64,6 +64,12 @@ const READY: Record<string, { load: LessonMeta['load']; minutes: number }> = {
   'tilda-git-t05': { load: () => import('./tilda-git/git-github'), minutes: 39 },
   'tilda-git-t06': { load: () => import('./tilda-git/git-branches'), minutes: 36 },
   'tilda-git-t07': { load: () => import('./tilda-git/blockly-debugging'), minutes: 39 },
+  'js-g01': { load: () => import('./js/fake-sites'), minutes: 45 },
+  'js-g02': { load: () => import('./js/what-is-api'), minutes: 46 },
+  'js-g03': { load: () => import('./js/encryption'), minutes: 46 },
+  'js-g04': { load: () => import('./js/testers'), minutes: 44 },
+  'js-g05': { load: () => import('./js/delivery-app'), minutes: 44 },
+  'js-g06': { load: () => import('./js/open-source'), minutes: 43 },
   // </kit>
 };
 
