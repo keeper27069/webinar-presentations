@@ -6,7 +6,7 @@ import type { CodeLang } from '../code/highlight';
 
 export interface KitNotes {
   /** 2–4 bullets: what the mentor says */
-  say: string[];
+  say?: string[];
   /** Question for the chat */
   ask?: string;
   /** Likely chat answers and how to react */

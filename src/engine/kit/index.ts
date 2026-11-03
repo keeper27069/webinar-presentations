@@ -13,7 +13,7 @@ function sceneText(s: KitScene): SceneText & Record<string, unknown> {
   return {
     ...rest,
     chatPrompt: chat,
-    notes: { say: notes.say, askChat: notes.ask, expectChat: notes.expect, answer: notes.answer, minutes: notes.min, switchTo: notes.switch },
+    notes: { say: notes.say ?? [], askChat: notes.ask, expectChat: notes.expect, answer: notes.answer, minutes: notes.min, switchTo: notes.switch },
   };
 }
 
