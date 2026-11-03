@@ -42,7 +42,8 @@ if (since && !/^0+$/.test(since)) {
 }
 if (changed === 'core' && !args.some((a) => a.startsWith('--lang='))) langs.splice(0, langs.length, 'uz');
 const lessons = ready
-  .filter((id) => target === 'all' || id === target)
+  // target: 'all', one id, or a comma list of ids / prefixes (e.g. 'react,js-t')
+  .filter((id) => target === 'all' || target.split(',').some((t) => id === t || id.startsWith(t)))
   .map((id) => {
     const m = new RegExp(`\\['${id}',\\s*'([^']+)'`).exec(topics);
     return { id, module: id.replace(/-[gt]\d+$/, ''), slug: m?.[1] };

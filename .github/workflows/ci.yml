@@ -5,6 +5,13 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      lessons:
+        description: "Lessons to smoke: all, an id, or a comma list of ids/prefixes"
+        default: ''
+      langs:
+        description: "Languages, e.g. uz,ru,en"
+        default: 'uz,ru,en'
 
 jobs:
   check:
@@ -22,10 +29,16 @@ jobs:
       - name: Smoke test (changed lessons, 3 languages)
         env:
           BEFORE: ${{ github.event.before || github.event.pull_request.base.sha || 'HEAD~1' }}
+          LESSONS: ${{ github.event.inputs.lessons }}
+          LANGS: ${{ github.event.inputs.langs }}
         run: |
           npm i --no-save playwright
           npx playwright install --with-deps chromium
-          npm run smoke -- all --since="$BEFORE"
+          if [ -n "$LESSONS" ]; then
+            npm run smoke -- "$LESSONS" --lang="$LANGS" --no-shots
+          else
+            npm run smoke -- all --since="$BEFORE"
+          fi
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v5
