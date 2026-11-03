@@ -14,7 +14,7 @@ export default function S03() {
         <motion.div
           className="glass"
           style={{ padding: '18px 26px', borderColor: '#ff6b6b', background: 'rgba(255,107,107,.12)', fontWeight: 800, fontSize: 30 }}
-          animate={{ scale: [1, 1.02, 1] }}
+          animate={{ boxShadow: ['0 0 0 0 rgba(255,107,107,0)', '0 0 0 6px rgba(255,107,107,.35)', '0 0 0 0 rgba(255,107,107,0)'] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
           ⚠ {t.warning}

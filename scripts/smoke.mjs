@@ -50,6 +50,19 @@ const browser = await chromium.launch();
 const errors = [];
 const warnings = [];
 
+/** Wait until the scene enter/exit transition has finished (transform back to identity). */
+const settle = (page) =>
+  page.waitForFunction(
+    () => {
+      const els = document.querySelectorAll('.scene-motion');
+      if (els.length !== 1) return false;
+      const t = getComputedStyle(els[0]).transform;
+      return t === 'none' || t === 'matrix(1, 0, 0, 1, 0, 0)';
+    },
+    null,
+    { timeout: 4000 },
+  ).catch(() => {});
+
 const CHECK = () => {
   const stage = document.querySelector('[data-stage]');
   if (!stage) return { out: [], clipped: [] };
@@ -90,7 +103,8 @@ for (const l of lessons) {
     let s = await state();
     const seen = [];
     for (let guard = 0; guard < 200; guard++) {
-      await sleep(450);
+      await settle(page);
+      await sleep(350);
       const where = `${tag} scene ${s.scene + 1} step ${s.step + 1}`;
       const c = await page.evaluate(CHECK);
       c.out.forEach((n) => errors.push(`${where}: outside stage: ${n}`));
@@ -111,7 +125,8 @@ for (const l of lessons) {
     for (let i = 0; i < s.total; i++) {
       await page.goto(`${base}/${lang}/${l.module}/${l.slug}/${i + 1}`);
       await page.waitForSelector('.player');
-      await sleep(400);
+      await settle(page);
+      await sleep(300);
       const buttons = await page.$$('.scene button:not([disabled]), .scene .chip, .scene .code__line.is-clickable');
       for (const b of buttons.slice(0, 14)) {
         try {
@@ -122,6 +137,7 @@ for (const l of lessons) {
         }
       }
       await sleep(900);
+      await settle(page);
       const where = `${tag} scene ${i + 1} (after clicks)`;
       const c = await page.evaluate(CHECK);
       c.out.forEach((n) => errors.push(`${where}: outside stage: ${n}`));
