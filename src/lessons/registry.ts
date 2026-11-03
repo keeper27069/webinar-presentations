@@ -34,6 +34,22 @@ const READY: Record<string, { load: LessonMeta['load']; minutes: number }> = {
   'css-t02': { load: () => import('./css/css-grid'), minutes: 36 },
   'css-t03': { load: () => import('./css/animations'), minutes: 35 },
   'css-t04': { load: () => import('./css/css-variables'), minutes: 34 },
+  'css-t05': { load: () => import('./css/pseudo-elements'), minutes: 33 },
+  'css-t06': { load: () => import('./css/units'), minutes: 35 },
+  'css-t07': { load: () => import('./css/filters-clip-path'), minutes: 35 },
+  'css-t08': { load: () => import('./css/devtools-debugging'), minutes: 37 },
+  'css-t09': { load: () => import('./css/bem'), minutes: 33 },
+  'css-t10': { load: () => import('./css/has-and-nesting'), minutes: 37 },
+  'bootstrap-g01': { load: () => import('./bootstrap/recommendation-algorithms'), minutes: 46 },
+  'bootstrap-g02': { load: () => import('./bootstrap/navigator-algorithms'), minutes: 44 },
+  'bootstrap-g03': { load: () => import('./bootstrap/automation'), minutes: 42 },
+  'bootstrap-g04': { load: () => import('./bootstrap/how-chatgpt-works'), minutes: 51 },
+  'bootstrap-g05': { load: () => import('./bootstrap/finding-solutions'), minutes: 44 },
+  'bootstrap-t01': { load: () => import('./bootstrap/bootstrap-6'), minutes: 37 },
+  'bootstrap-t02': { load: () => import('./bootstrap/accordion-collapse-offcanvas'), minutes: 35 },
+  'bootstrap-t03': { load: () => import('./bootstrap/tooltip-popover-toast'), minutes: 37 },
+  'bootstrap-t04': { load: () => import('./bootstrap/icons-drawer'), minutes: 35 },
+  'bootstrap-t05': { load: () => import('./bootstrap/scrollspy-stepper'), minutes: 33 },
   // </kit>
 };
 

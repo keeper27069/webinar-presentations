@@ -135,7 +135,7 @@ export default kit({
       steps: [
         { label: "Пекарня ¦ Novvoyxona ¦ Bakery", html: PAGE, css: CLASSIC.replaceAll('}', '}\n') },
         { label: "Детский центр ¦ Bolalar markazi ¦ Kids' centre", html: PAGE.replace('Non Bakery', 'Fun Kids').replace('Fresh bread since 1998', 'Games, art and English'), css: BRIGHT.replaceAll('}', '}\n') },
-        { label: "Юрист ¦ Yurist ¦ Lawyer", html: PAGE.replace('Non Bakery', 'Karimov Law').replace('Fresh bread since 1998', 'Legal help for business'), css: MIN.replace('background:#fff;color:#111', 'background:#0f1b33;color:#e8ecf5').replace('border:1px solid #111', 'border:1px solid #e8ecf5').replaceAll('}', '}\n') },
+        { label: "Юрист ¦ Yurist ¦ Lawyer", html: PAGE.replace('Non Bakery', 'Lexa Legal').replace('Fresh bread since 1998', 'Legal help for business'), css: MIN.replace('background:#fff;color:#111', 'background:#0f1b33;color:#e8ecf5').replace('border:1px solid #111', 'border:1px solid #e8ecf5').replaceAll('}', '}\n') },
       ],
       takeaway: "Задание клиента → цвета, шрифт, отступы. Вот где CSS встречается с работой. ¦ Mijoz topshirig'i → ranglar, shrift, bo'shliqlar. CSS ish bilan aynan shu yerda uchrashadi. ¦ Client brief → colours, font, spacing. This is where CSS meets real work.",
       notes: { say: ["Переключайте шаги, потом правьте вживую по просьбам чата («сделай для барбершопа»)."], min: 5 },

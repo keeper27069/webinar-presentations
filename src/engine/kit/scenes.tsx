@@ -612,7 +612,7 @@ function Finale() {
             ))}
           </div>
         </div>
-        <div style={{ width: 460 }}>
+        <div className="kit-finale-badge">
           <Achievement title={s.badge} subtitle={s.badgeSub} icon={s.icon} />
         </div>
       </div>

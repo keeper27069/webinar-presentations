@@ -13,6 +13,12 @@ export interface BugSnippet {
 }
 
 /** The chat writes the line number with the bug; the mentor clicks it. Keys 1–9 switch snippets. */
+/** Shrink code font so the longest line fits the given width (px) */
+export function fitFont(code: string, width: number, max = 26, min = 17) {
+  const longest = Math.max(...code.split('\n').map((l) => l.length), 1);
+  return Math.max(min, Math.min(max, Math.floor(width / (longest * 0.62 + 4))));
+}
+
 export function BugHunt({ snippets, name = 'bugs' }: { snippets: BugSnippet[]; name?: string }) {
   const ui = useUi();
   const [active, setActive] = useSceneState<number>(`${name}:active`, 0);
@@ -52,6 +58,7 @@ export function BugHunt({ snippets, name = 'bugs' }: { snippets: BugSnippet[]; n
         <CodeBlock
           code={sn.code}
           lang={sn.lang ?? 'js'}
+          fontSize={fitFont(sn.code, 840)}
           onLineClick={click}
           lineClass={(n) => (f.includes(n) ? 'is-bug' : miss === n ? 'is-miss' : undefined)}
           lineExtra={(n) =>
@@ -72,7 +79,7 @@ export function BugHunt({ snippets, name = 'bugs' }: { snippets: BugSnippet[]; n
             {shown && (
               <motion.div key={`${active}-${shown.line}`} className="bughunt__explain" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                 <b>#{shown.line}</b> {shown.explain}
-                {shown.fix && <CodeBlock code={shown.fix} lang={sn.lang ?? 'js'} />}
+                {shown.fix && <CodeBlock code={shown.fix} lang={sn.lang ?? 'js'} fontSize={fitFont(shown.fix, 660)} />}
               </motion.div>
             )}
           </AnimatePresence>
