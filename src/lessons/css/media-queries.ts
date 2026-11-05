@@ -1,170 +1,131 @@
 import { kit } from '@engine/kit';
 
-const PAGE = `<header>Bit Shop</header>\n<main class="grid">\n  <div class="card">👟 Sneakers</div>\n  <div class="card">🎒 Backpack</div>\n  <div class="card">🧢 Cap</div>\n</main>`;
-const CSS = `body { margin: 0; font-family: system-ui; }
-header { padding: 16px; background: #4d94ff; color: #fff; font-size: 22px; font-weight: 800; }
-.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 16px; }
-.card { padding: 30px; border-radius: 16px; background: #eef3ff; font-size: 22px; text-align: center; }
-@media (max-width: 900px) {
-  .grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 600px) {
-  .grid { grid-template-columns: 1fr; }
-  header { text-align: center; }
-}`;
+const CSS = `.dev{margin:0 auto;border:6px solid #16181f;border-radius:26px;padding:14px;background:#f4f5f8;height:520px;overflow:hidden}
+.dev h3{margin:0 0 10px;font-size:22px}
+.g{display:grid;gap:10px}
+.g i{display:grid;place-items:center;height:90px;border-radius:14px;background:#3d7bff;color:#fff;font:800 26px Manrope,system-ui;font-style:normal}
+.w{font:800 18px JetBrains Mono,monospace;color:#3d7bff;text-align:center;margin-bottom:8px}`;
+const dev = (w: number, cols: number, label: string) =>
+  `<div class="w">${label} · ${w}px</div><div class="dev" style="width:${w}px"><h3>🛍️ Shop</h3><div class="g" style="grid-template-columns:repeat(${cols},1fr)"><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i></div></div>`;
 
 export default kit({
   id: 'css-t01',
-  title: "Медиазапросы: один сайт для телефона и компьютера ¦ Media so'rovlar: telefon va kompyuter uchun bitta sayt ¦ Media queries: one site for phone and desktop",
-  question: "Как одна и та же страница перестраивается под телефон, планшет и компьютер? ¦ Bitta sahifa telefon, planshet va kompyuterga qanday moslashadi? ¦ How does one page rearrange itself for phone, tablet and desktop?",
-  route: ["Проблема ¦ Muammo ¦ Problem", "Синтаксис ¦ Sintaksis ¦ Syntax", "Практика ¦ Amaliyot ¦ Practice", "Ошибки ¦ Xatolar ¦ Bugs", "Финал ¦ Yakun ¦ Finale"],
+  title: "Медиазапросы ¦ Media so'rovlar ¦ Media queries",
+  question: "Как один сайт красиво выглядит и на компьютере, и на телефоне? ¦ Bitta sayt kompyuterda ham, telefonda ham qanday chiroyli ko'rinadi? ¦ How does one site look great on both a computer and a phone?",
+  route: ["Проблема ¦ Muammo ¦ The problem", "Как это работает ¦ Qanday ishlaydi ¦ How it works", "Синтаксис ¦ Sintaksis ¦ Syntax", "Практика ¦ Amaliyot ¦ Practice", "Финал ¦ Yakun ¦ Finale"],
   scenes: [
     {
       type: 'intro',
       stage: 0,
       icon: '📱',
       kicker: "CSS · техническая тема 1 ¦ CSS · texnik mavzu 1 ¦ CSS · technical topic 1",
-      title: "Сайт на маленьком экране ¦ Kichik ekrandagi sayt ¦ A site on a small screen",
-      chat: "с чего вы чаще открываете сайты: телефон или компьютер? ¦ saytlarni ko'proq nimadan ochasiz: telefon yoki kompyuter? ¦ what do you open sites on more: phone or computer?",
-      lead: "Больше половины людей открывают сайты с телефона. Три карточки в ряд на экране 375px превращаются в кашу. Как CSS узнаёт ширину экрана? ¦ Odamlarning yarmidan ko'pi saytlarni telefondan ochadi. 375px ekranda uchta kartochka bir qatorda bo'tqaga aylanadi. CSS ekran kengligini qanday biladi? ¦ More than half of people browse on phones. Three cards in a row on a 375px screen turn to mush. How does CSS know the screen width?",
-      takeaway: "@media — «если экран такой-то, то примени эти стили». ¦ @media — «agar ekran shunday bo'lsa, bu uslublarni qo'lla». ¦ @media means “if the screen is like this, apply these styles”.",
-      notes: { say: ["Спросите чат, с чего смотрят стрим. Большинство — телефон."], min: 3 },
+      title: "Сайт, который меняет форму ¦ Shaklini o'zgartiradigan sayt ¦ A site that changes shape",
+      chat: "с чего вы чаще открываете сайты — с телефона или компьютера? ¦ saytlarni ko'proq nimadan ochasiz — telefondanmi yoki kompyuterdanmi? ¦ do you open sites more on a phone or a computer?",
+      lead: "Экран телефона узкий, компьютера — широкий. Медиазапрос говорит сайту: «если экран узкий — перестройся». ¦ Telefon ekrani tor, kompyuterniki — keng. Media so'rov saytga aytadi: «ekran tor bo'lsa — qayta tuzil». ¦ Phone screens are narrow, computers wide. A media query tells the site: “if the screen is narrow, rearrange”.",
+      facts: ["Один код — все экраны ¦ Bitta kod — barcha ekranlar ¦ One code, every screen", "Условие по ширине ¦ Kenglik bo'yicha shart ¦ A condition on width", "Колонки перестраиваются ¦ Ustunlar qayta tuziladi ¦ Columns rearrange"],
+      takeaway: "Посмотрим, как одна страница «перетекает» под разные экраны. ¦ Bitta sahifa turli ekranlarga qanday «oqib o'tishini» ko'ramiz. ¦ Let's watch one page flow across different screens.",
+      notes: { min: 3 },
     },
     {
-      type: 'browser',
-      stage: 0,
-      title: "Одна страница — три экрана ¦ Bitta sahifa — uchta ekran ¦ One page, three screens",
-      chat: "сколько карточек в ряд на каждом экране? ¦ har bir ekranda bir qatorda nechta kartochka? ¦ how many cards per row on each screen?",
-      tabs: [
-        { label: "Компьютер ¦ Kompyuter ¦ Desktop", url: 'bit-shop.example', width: 1180, css: CSS, html: PAGE, note: "Шире 900px: три карточки в ряд. ¦ 900px'dan keng: bir qatorda uchta kartochka. ¦ Wider than 900px: three cards per row." },
-        { label: "Планшет ¦ Planshet ¦ Tablet", url: 'bit-shop.example', width: 768, css: CSS, html: PAGE, note: "768px: сработал первый медиазапрос — две колонки. ¦ 768px: birinchi media so'rov ishladi — ikki ustun. ¦ 768px: the first media query fires — two columns." },
-        { label: "Телефон ¦ Telefon ¦ Phone", url: 'bit-shop.example', width: 375, css: CSS, html: PAGE, note: "375px: сработали оба — одна колонка и шапка по центру. ¦ 375px: ikkalasi ishladi — bitta ustun va markazdagi sarlavha. ¦ 375px: both fire — one column and a centred header." },
-      ],
-      takeaway: "HTML один, а раскладка меняется по ширине экрана. Это и есть адаптивная вёрстка. ¦ HTML bitta, joylashuv esa ekran kengligiga qarab o'zgaradi. Moslashuvchan vyorstka shu. ¦ One HTML, and the layout changes with screen width. That's responsive design.",
-      notes: { say: ["Переключайте 1–3, на вкладке «Код» покажите @media.", "В браузере то же самое: F12 → значок телефона."], min: 4 },
-    },
-    {
-      type: 'walk',
+      type: 'show',
       stage: 1,
-      title: "Как читать медиазапрос ¦ Media so'rovni qanday o'qish ¦ How to read a media query",
-      chat: "при какой ширине станет одна колонка? ¦ qaysi kenglikda bitta ustun bo'ladi? ¦ at what width does it become one column?",
+      title: "Один магазин — три экрана ¦ Bitta do'kon — uchta ekran ¦ One shop, three screens",
+      chat: "сколько колонок поместится на телефоне? ¦ telefonga nechta ustun sig'adi? ¦ how many columns fit on a phone?",
+      css: CSS,
       lang: 'css',
-      code: `.grid {\n  grid-template-columns: repeat(3, 1fr);\n}\n@media (max-width: 900px) {\n  .grid { grid-template-columns: repeat(2, 1fr); }\n}\n@media (max-width: 600px) {\n  .grid { grid-template-columns: 1fr; }\n  header { text-align: center; }\n}`,
-      marks: [
-        { line: 2, text: "Обычные стили — для всех экранов: три колонки. ¦ Oddiy uslublar — barcha ekranlar uchun: uchta ustun. ¦ Normal styles apply to every screen: three columns." },
-        { line: 4, text: "«Если ширина ≤ 900px…» — условие медиазапроса. ¦ «Agar kenglik ≤ 900px bo'lsa…» — media so'rov sharti. ¦ “If the width is ≤ 900px…” — the media query condition." },
-        { line: 5, text: "…то колонок две. Это правило перебивает строку 2. ¦ …unda ustunlar ikkita. Bu qoida 2-qatorni bosib o'tadi. ¦ …then two columns. This rule overrides line 2." },
-        { line: 7, text: "Ещё уже — ≤ 600px: следующий медиазапрос. ¦ Yanada torroq — ≤ 600px: keyingi media so'rov. ¦ Even narrower — ≤ 600px: the next media query." },
-        { line: 8, text: "Одна колонка: карточки друг под другом, как в любом мобильном приложении. ¦ Bitta ustun: kartochkalar ustma-ust, har qanday mobil ilovadagidek. ¦ One column: cards stacked like in any mobile app." },
+      steps: [
+        { code: '.grid {\n  grid-template-columns: repeat(3, 1fr);\n}', line: 2, html: dev(640, 3, '💻'), say: "Компьютер: широко — три колонки. ¦ Kompyuter: keng — uchta ustun. ¦ Computer: wide — three columns." },
+        { code: '@media (max-width: 900px) {\n  .grid { grid-template-columns: repeat(2, 1fr); }\n}', line: 1, html: dev(440, 2, '📟'), say: "Планшет: экран уже — две колонки. ¦ Planshet: ekran torroq — ikkita ustun. ¦ Tablet: narrower — two columns." },
+        { code: '@media (max-width: 600px) {\n  .grid { grid-template-columns: 1fr; }\n}', line: 1, html: dev(260, 1, '📱'), say: "Телефон: одна колонка, листаем вниз. ¦ Telefon: bitta ustun, pastga varaqlaymiz. ¦ Phone: one column — just scroll down." },
       ],
-      takeaway: "@media (max-width: N) { … } — правила внутри работают, только когда экран не шире N. ¦ @media (max-width: N) { … } — ichidagi qoidalar faqat ekran N'dan keng bo'lmaganda ishlaydi. ¦ @media (max-width: N) { … } — the rules inside apply only when the screen is at most N wide.",
-      notes: { say: ["→ по строкам."], answer: "≤ 600px", min: 4 },
+      takeaway: "Карточки те же — меняется только их раскладка. ¦ Kartochkalar o'sha — faqat ularning joylashuvi o'zgaradi. ¦ Same cards — only the layout changes.",
+      notes: { say: ["Покажите то же вживую: сужайте окно браузера на любом сайте."], min: 5 },
     },
     {
-      type: 'poll',
-      stage: 1,
-      title: "Сработает или нет? ¦ Ishlaydimi yoki yo'qmi? ¦ Will it fire?",
-      chat: "голосуйте 1–4 ¦ 1–4 bilan ovoz bering ¦ vote 1–4",
-      question: "Экран 700px. Какие медиазапросы сработают? ¦ Ekran 700px. Qaysi media so'rovlar ishlaydi? ¦ The screen is 700px. Which media queries fire?",
-      options: [
-        { label: '(max-width: 600px)', detail: "Нет: 700 > 600 ¦ Yo'q: 700 > 600 ¦ No: 700 > 600" },
-        { label: '(max-width: 900px)', detail: "Да: 700 ≤ 900 ✔ ¦ Ha: 700 ≤ 900 ✔ ¦ Yes: 700 ≤ 900 ✔" },
-        { label: '(min-width: 1024px)', detail: "Нет: 700 < 1024 ¦ Yo'q: 700 < 1024 ¦ No: 700 < 1024" },
-        { label: "Все три ¦ Uchalasi ham ¦ All three" },
-      ],
-      correct: 1,
-      result: "max-width = «не шире», min-width = «не уже». 700px не шире 900 — правило работает. ¦ max-width = «kengroq emas», min-width = «torroq emas». 700px 900'dan keng emas — qoida ishlaydi. ¦ max-width means “at most”, min-width means “at least”. 700px is at most 900, so it fires.",
-      takeaway: "max-width — для экранов меньше, min-width — для экранов больше. ¦ max-width — kichikroq ekranlar uchun, min-width — kattaroq ekranlar uchun. ¦ max-width targets smaller screens, min-width targets larger ones.",
-      notes: { say: ["Голосование. Нарисуйте на бумаге/в воздухе числовую прямую."], min: 3 },
-    },
-    {
-      type: 'sort',
-      stage: 1,
-      title: "Какое устройство куда? ¦ Qaysi qurilma qayerga? ¦ Which device goes where?",
-      chat: "пишите: «375 — телефон» ¦ yozing: «375 — telefon» ¦ write: “375 — phone”",
-      zones: [
-        { id: 'phone', label: "Телефон < 600px ¦ Telefon < 600px ¦ Phone < 600px", icon: '📱' },
-        { id: 'tab', label: "Планшет 600–1024px ¦ Planshet 600–1024px ¦ Tablet 600–1024px", icon: '📲' },
-        { id: 'pc', label: "Компьютер > 1024px ¦ Kompyuter > 1024px ¦ Desktop > 1024px", icon: '🖥️' },
-      ],
-      items: [
-        { text: "iPhone — 390px ¦ iPhone — 390px ¦ iPhone — 390px", zone: 'phone' },
-        { text: "Android — 412px ¦ Android — 412px ¦ Android — 412px", zone: 'phone' },
-        { text: "iPad — 768px ¦ iPad — 768px ¦ iPad — 768px", zone: 'tab' },
-        { text: "Телефон боком — 844px ¦ Yonboshlatilgan telefon — 844px ¦ Phone sideways — 844px", zone: 'tab', why: "Ширина меняется при повороте! ¦ Burilganda kenglik o'zgaradi! ¦ The width changes when you rotate!" },
-        { text: "Ноутбук — 1366px ¦ Noutbuk — 1366px ¦ Laptop — 1366px", zone: 'pc' },
-        { text: "Монитор — 1920px ¦ Monitor — 1920px ¦ Monitor — 1920px", zone: 'pc' },
-      ],
-      takeaway: "Точки перелома (breakpoints) примерно 600 и 1024px покрывают большинство устройств. ¦ Taxminan 600 va 1024px'lik burilish nuqtalari (breakpoint) ko'p qurilmalarni qamrab oladi. ¦ Breakpoints around 600 and 1024px cover most devices.",
-      notes: { say: ["Раскладка → «Проверить». Ширины — в CSS-пикселях, не в пикселях матрицы."], min: 3 },
-    },
-    {
-      type: 'compare',
+      type: 'animate',
       stage: 2,
-      title: "Mobile first и desktop first ¦ Mobile first va desktop first ¦ Mobile first vs desktop first",
-      chat: "с какого экрана вы обычно начинаете верстать? ¦ odatda qaysi ekrandan vyorstka qilishni boshlaysiz? ¦ which screen do you usually start with?",
-      left: { icon: '🖥️', label: 'Desktop first', lang: 'css', code: `.grid { columns: 3; }\n\n@media (max-width: 600px) {\n  .grid { columns: 1; }\n}`, points: ["Сначала компьютер, потом «урезаем» ¦ Avval kompyuter, keyin «qisqartiramiz» ¦ Desktop first, then trim down"] },
-      right: { icon: '📱', label: 'Mobile first', lang: 'css', code: `.grid { columns: 1; }\n\n@media (min-width: 600px) {\n  .grid { columns: 3; }\n}`, points: ["Сначала телефон, потом «добавляем» ¦ Avval telefon, keyin «qo'shamiz» ¦ Phone first, then add more", "Так делают большинство современных сайтов ¦ Ko'p zamonaviy saytlar shunday qiladi ¦ Most modern sites do this"] },
-      verdict: "Оба работают. Mobile first проще: на маленьком экране меньше всего, и вы добавляете, а не удаляете. ¦ Ikkalasi ham ishlaydi. Mobile first osonroq: kichik ekranda eng kam narsa bor va siz o'chirmaysiz, qo'shasiz. ¦ Both work. Mobile first is simpler: small screens have the least, so you add rather than remove.",
-      notes: { say: ["→ — правая колонка. Bootstrap, который вы будете учить, тоже mobile first."], min: 3 },
+      title: "Как браузер решает ¦ Brauzer qanday qaror qiladi ¦ How the browser decides",
+      chat: "какой стиль сработает на экране 500px? ¦ 500px ekranda qaysi uslub ishlaydi? ¦ which style applies on a 500px screen?",
+      actors: [
+        { id: 'phone', icon: '📱', label: "Экран 500px ¦ 500px ekran ¦ 500px screen" },
+        { id: 'q', text: "Ширина ≤ 600px? ¦ Kenglik ≤ 600px? ¦ Width ≤ 600px?" },
+        { id: 'yes', text: "Да → 1 колонка ¦ Ha → 1 ustun ¦ Yes → 1 column" },
+        { id: 'no', text: "Нет → 3 колонки ¦ Yo'q → 3 ustun ¦ No → 3 columns" },
+      ],
+      steps: [
+        { say: "Браузер узнаёт ширину экрана. ¦ Brauzer ekran kengligini aniqlaydi. ¦ The browser checks the screen width.", at: { phone: [15, 50] } },
+        { say: "И задаёт вопрос из медиазапроса. ¦ Va media so'rovdagi savolni beradi. ¦ It asks the media query's question.", at: { q: [50, 50] }, lines: [['phone', 'q']], pulse: ['q'] },
+        { say: "500 меньше 600 — значит «да»! ¦ 500 600 dan kichik — demak «ha»! ¦ 500 is under 600 — so “yes”!", at: { yes: [82, 25], no: [82, 75] }, lines: [['phone', 'q'], ['q', 'yes']], pulse: ['yes'] },
+      ],
+      takeaway: "Медиазапрос — это if для CSS: «если экран такой — примени эти стили». ¦ Media so'rov — CSS uchun if: «ekran shunday bo'lsa — bu uslublarni qo'lla». ¦ A media query is CSS's if: “if the screen is like this, use these styles”.",
+      notes: { min: 3 },
+    },
+    {
+      type: 'show',
+      stage: 2,
+      title: "Не только колонки ¦ Faqat ustunlar emas ¦ Not just columns",
+      chat: "что ещё стоит менять на телефоне? ¦ telefonda yana nimani o'zgartirish kerak? ¦ what else should change on a phone?",
+      lang: 'css',
+      css: 'h1{margin:0 0 8px;transition:all .7s}p{color:#666;font-size:22px}.hero{padding:26px;border-radius:20px;background:#eef4ff}',
+      steps: [
+        { code: 'h1 { font-size: 56px; }', html: '<div class="hero"><h1 style="font-size:56px">Big Sale 🔥</h1><p>Everything −50%</p></div>', say: "На компьютере заголовок большой. ¦ Kompyuterda sarlavha katta. ¦ On a computer the heading is big." },
+        { code: '@media (max-width: 600px) {\n  h1 { font-size: 32px; }\n}', line: 2, html: '<div class="hero" style="max-width:280px;margin:0 auto"><h1 style="font-size:32px">Big Sale 🔥</h1><p>Everything −50%</p></div>', say: "На телефоне — поменьше, чтобы влез. ¦ Telefonda — kichikroq, sig'ishi uchun. ¦ On a phone it shrinks so it fits." },
+      ],
+      takeaway: "Шрифты, отступы, видимость — всё можно менять медиазапросом. ¦ Shriftlar, bo'shliqlar, ko'rinish — hammasini media so'rov bilan o'zgartirish mumkin. ¦ Fonts, spacing, visibility — media queries can change them all.",
+      notes: { min: 3 },
     },
     {
       type: 'live',
-      stage: 2,
-      title: "Делаем страницу адаптивной ¦ Sahifani moslashuvchan qilamiz ¦ Making the page responsive",
-      chat: "какую ширину превью поставим точкой перелома? ¦ qaysi kenglikni burilish nuqtasi qilamiz? ¦ which width shall we use as the breakpoint?",
-      task: "✍️ Превью ≈ 850px. Поменяйте 900 на 800 — и увидите, как медиазапрос выключится ¦ ✍️ Prevyu ≈ 850px. 900'ni 800'ga almashtiring — media so'rov o'chganini ko'rasiz ¦ ✍️ The preview is ≈850px. Change 900 to 800 and watch the media query switch off",
-      steps: [
-        { label: "Без @media ¦ @media'siz ¦ No @media", html: PAGE, css: CSS.split('@media')[0] },
-        { label: "С @media ¦ @media bilan ¦ With @media", html: PAGE, css: CSS },
-      ],
-      takeaway: "Меняя одно число в @media, вы решаете, где телефон, а где компьютер. ¦ @media'dagi bitta sonni o'zgartirib, qayer telefon, qayer kompyuter ekanini hal qilasiz. ¦ By changing one number in @media you decide where “phone” ends and “desktop” begins.",
-      notes: { say: ["Шаг 2: поменяйте 900 на 800 и обратно — колонки меняются вживую.", "Предложите чату свой breakpoint."], min: 6 },
-    },
-    {
-      type: 'bugs',
       stage: 3,
-      title: "Почему адаптив не работает? ¦ Nega moslashuv ishlamayapti? ¦ Why isn't responsive working?",
-      chat: "номер строки с ошибкой ¦ xato qator raqami ¦ the broken line number",
-      snippets: [
-        { title: "Забыли единицы ¦ O'lchov birligi unutildi ¦ Missing units", lang: 'css', code: `.menu { display: flex; }\n@media (max-width: 600) {\n  .menu { flex-direction: column; }\n}`, line: 2, explain: "600 без px — браузер не понимает условие. ¦ px'siz 600 — brauzer shartni tushunmaydi. ¦ 600 without px — the browser can't read the condition.", fix: '@media (max-width: 600px) {' },
-        { title: "Порядок правил ¦ Qoidalar tartibi ¦ Rule order", lang: 'css', code: `@media (max-width: 600px) {\n  h1 { font-size: 28px; }\n}\nh1 { font-size: 48px; }`, line: 4, explain: "Обычное правило стоит ниже и перебивает медиазапрос. Медиазапросы пишут в конце. ¦ Oddiy qoida pastda turibdi va media so'rovni bosib o'tadi. Media so'rovlar oxirida yoziladi. ¦ The plain rule comes later and overrides the media query. Put media queries last.", fix: "Перенести h1 { … } выше @media ¦ h1 { … }ni @media'dan yuqoriga ko‘chirish ¦ Move h1 { … } above the @media block" },
-        { title: "На телефоне всё мелкое ¦ Telefonda hammasi mayda ¦ Everything is tiny on phones", lang: 'html', code: `<head>\n  <meta charset="UTF-8">\n  <title>Bit Shop</title>\n</head>`, line: 2, explain: "Нет meta viewport — телефон «притворяется» компьютером и уменьшает всё. Добавьте её после charset. ¦ meta viewport yo'q — telefon o'zini kompyuterdek ko'rsatib, hammasini kichraytiradi. Uni charset'dan keyin qo'shing. ¦ No meta viewport — the phone pretends to be a desktop and shrinks everything. Add it after charset.", fix: '<meta name="viewport" content="width=device-width, initial-scale=1">' },
-      ],
-      takeaway: "Три частые ошибки: нет px, медиазапрос выше обычного правила, нет meta viewport. ¦ Uchta keng tarqalgan xato: px yo'q, media so'rov oddiy qoidadan yuqorida, meta viewport yo'q. ¦ Three classic bugs: missing px, the media query above the plain rule, no meta viewport.",
-      notes: { say: ["Чат пишет номер строки — вы кликаете."], min: 5 },
+      title: "Попробуйте сами ¦ O'zingiz sinab ko'ring ¦ Try it yourself",
+      chat: "при какой ширине станет 1 колонка? ¦ qaysi kenglikda 1 ustun bo'ladi? ¦ at what width does it become 1 column?",
+      task: "✍️ Поменяйте 600px на 900px и сравните ¦ ✍️ 600px'ni 900px'ga o'zgartiring va solishtiring ¦ ✍️ Change 600px to 900px and compare",
+      steps: [{ label: "Сетка ¦ To'r ¦ Grid", html: '<div class="grid">\n  <div>🍕</div><div>🍔</div><div>🍟</div>\n  <div>🌮</div><div>🍩</div><div>🥤</div>\n</div>', css: 'body{font-family:Manrope,system-ui}\n.grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 12px;\n}\n.grid div {\n  font-size: 48px; text-align: center;\n  padding: 20px; border-radius: 16px; background: #eef4ff;\n}\n@media (max-width: 600px) {\n  .grid { grid-template-columns: 1fr; }\n}' }],
+      takeaway: "Окно предпросмотра узкое — поэтому правило сработало. ¦ Ko'rish oynasi tor — shuning uchun qoida ishladi. ¦ The preview is narrow, so the rule kicks in.",
+      notes: { say: ["В DevTools включите режим телефона (Ctrl+Shift+M) и покажите то же."], min: 6 },
     },
     {
-      type: 'cheatsheet',
-      stage: 4,
-      title: "Шпаргалка по медиазапросам ¦ Media so'rovlar shpargalkasi ¦ Media queries cheat sheet",
-      sheetTitle: "Адаптив за 4 шага ¦ 4 qadamda moslashuv ¦ Responsive in 4 steps",
-      items: [
-        { icon: '📱', text: "Обязательно в <head> ¦ <head>'da majburiy ¦ Required in <head>", code: '<meta name="viewport" content="width=device-width, initial-scale=1">' },
-        { icon: '⬇️', text: "Для экранов меньше ¦ Kichikroq ekranlar uchun ¦ For smaller screens", code: '@media (max-width: 600px) { … }' },
-        { icon: '⬆️', text: "Для экранов больше ¦ Kattaroq ekranlar uchun ¦ For larger screens", code: '@media (min-width: 1024px) { … }' },
-        { icon: '📍', text: "Медиазапросы — в конце файла ¦ Media so'rovlar — fayl oxirida ¦ Media queries go last", code: '/* base … */ @media …' },
-        { icon: '🔍', text: "Проверка ¦ Tekshiruv ¦ Testing", code: 'F12 → Device toolbar' },
+      type: 'truefalse',
+      stage: 3,
+      title: "Правда или миф? ¦ Haqiqatmi yoki afsona? ¦ True or myth?",
+      chat: "номер и «правда»/«миф» ¦ raqam va «haqiqat»/«afsona» ¦ number and “true”/“myth”",
+      statements: [
+        { text: "Для телефона нужен отдельный сайт ¦ Telefon uchun alohida sayt kerak ¦ Phones need a separate site", truth: false, explain: "Один сайт + медиазапросы. ¦ Bitta sayt + media so'rovlar. ¦ One site plus media queries." },
+        { text: "max-width: 600px — «экран 600px и уже» ¦ max-width: 600px — «600px va undan tor ekran» ¦ max-width: 600px means “600px or narrower”", truth: true, explain: "max — максимум. ¦ max — maksimum. ¦ max = maximum." },
+        { text: "Большинство людей заходят на сайты с телефона ¦ Ko'pchilik saytlarga telefondan kiradi ¦ Most people visit sites on phones", truth: true, explain: "Поэтому телефон проверяют первым. ¦ Shuning uchun telefon birinchi tekshiriladi. ¦ So check phones first." },
       ],
-      columns: 1,
-      notes: { say: ["Скриншот на память."], min: 2 },
+      takeaway: "Сайт без медиазапросов на телефоне — как газета под лупой. ¦ Media so'rovsiz sayt telefonda — lupa ostidagi gazeta kabi. ¦ A site without media queries on a phone is like reading a newspaper through a straw.",
+      notes: { say: ["Голосуем по пунктам."], min: 3 },
+    },
+    {
+      type: 'mission',
+      stage: 4,
+      title: "Миссия: сайт для всех экранов ¦ Missiya: barcha ekranlar uchun sayt ¦ Mission: a site for every screen",
+      chat: "номера ответов в чат ¦ javob raqamlarini chatga ¦ answer numbers in the chat",
+      goal: "Сайт красивый на любом экране! ¦ Sayt istalgan ekranda chiroyli! ¦ The site looks great on any screen!",
+      items: [
+        { title: "Стиль только для узких экранов ¦ Faqat tor ekranlar uchun uslub ¦ A style for narrow screens only", choices: ['@media (max-width: 600px)', '@media (min-width: 600px)'], correct: 0, explain: "max — «до 600px». ¦ max — «600px gacha». ¦ max means “up to 600px”." },
+        { title: "Сколько колонок на телефоне? ¦ Telefonda nechta ustun? ¦ How many columns on a phone?", choices: ['1', '5'], correct: 0, explain: "Узко — одна колонка. ¦ Tor — bitta ustun. ¦ Narrow means one column." },
+        { title: "Как быстро проверить телефон? ¦ Telefonni qanday tez tekshirish mumkin? ¦ Quickest phone check?", choices: ["Режим телефона в DevTools ¦ DevTools'dagi telefon rejimi ¦ DevTools phone mode", "Купить 10 телефонов ¦ 10 ta telefon sotib olish ¦ Buy 10 phones"], correct: 0, explain: "Ctrl+Shift+M в Chrome. ¦ Chrome'da Ctrl+Shift+M. ¦ Ctrl+Shift+M in Chrome." },
+      ],
+      notes: { say: ["Ответы чата → «Проверить»."], min: 3 },
     },
     {
       type: 'finale',
       stage: 4,
       title: "Итог: медиазапросы ¦ Xulosa: media so'rovlar ¦ Summary: media queries",
-      chat: "какой блок своего сайта вы сделаете адаптивным первым? ¦ saytingizning qaysi blokini birinchi moslashuvchan qilasiz? ¦ which block of your site will you make responsive first?",
-      answer: "@media проверяет ширину экрана и включает нужные стили: max-width — для узких экранов, min-width — для широких. С meta viewport и медиазапросами в конце файла одна страница отлично выглядит и на телефоне, и на компьютере. ¦ @media ekran kengligini tekshirib, kerakli uslublarni yoqadi: max-width — tor ekranlar uchun, min-width — keng ekranlar uchun. meta viewport va fayl oxiridagi media so'rovlar bilan bitta sahifa telefonda ham, kompyuterda ham ajoyib ko'rinadi. ¦ @media checks the screen width and switches on the right styles: max-width for narrow screens, min-width for wide ones. With meta viewport and media queries at the end, one page looks great on phone and desktop.",
+      chat: "пришлите скриншот своего сайта на телефоне! ¦ saytingizning telefondagi skrinshotini yuboring! ¦ share a screenshot of your site on a phone!",
+      answer: "Медиазапрос — это «если» для CSS: @media (max-width: 600px) { … } применяет стили только на экранах уже 600px. Так один сайт перестраивается: три колонки на компьютере, две на планшете и одна на телефоне, а шрифты становятся меньше. Проверяйте телефон в режиме DevTools. ¦ Media so'rov — CSS uchun «agar»: @media (max-width: 600px) { … } uslublarni faqat 600px'dan tor ekranlarda qo'llaydi. Shunday qilib bitta sayt qayta tuziladi: kompyuterda uchta, planshetda ikkita va telefonda bitta ustun, shriftlar esa kichrayadi. Telefonni DevTools rejimida tekshiring. ¦ A media query is CSS's “if”: @media (max-width: 600px) { … } applies styles only on screens narrower than 600px. One site rearranges itself: three columns on a computer, two on a tablet, one on a phone, with smaller fonts. Check phones in DevTools mode.",
       icon: '📱',
-      badge: "Адаптивный мастер ¦ Moslashuv ustasi ¦ Responsive master",
+      badge: "Мастер всех экранов ¦ Barcha ekranlar ustasi ¦ Every-screen master",
       badgeSub: "CSS · техническая 1 ¦ CSS · texnik 1 ¦ CSS · technical 1",
       homeworkTitle: "Дома ¦ Uyda ¦ At home",
       homework: [
-        "Добавьте в свой проект meta viewport и два медиазапроса. ¦ Loyihangizga meta viewport va ikkita media so'rov qo'shing. ¦ Add meta viewport and two media queries to your project.",
-        "Проверьте его в F12 на трёх ширинах: 375, 768, 1366. ¦ Uni F12'da uchta kenglikda tekshiring: 375, 768, 1366. ¦ Test it in F12 at three widths: 375, 768, 1366.",
+        "Сделайте сетку из 6 карточек: 3 колонки → 2 → 1. ¦ 6 ta kartochkali to'r yarating: 3 ustun → 2 → 1. ¦ Build a 6-card grid: 3 columns → 2 → 1.",
+        "Проверьте её в режиме телефона в DevTools. ¦ Uni DevTools'ning telefon rejimida tekshiring. ¦ Check it in DevTools phone mode.",
       ],
-      takeaway: "Сначала думайте о телефоне — там сейчас ваши пользователи. ¦ Avval telefon haqida o'ylang — foydalanuvchilaringiz hozir u yerda. ¦ Think phone first — that's where your users are.",
-      notes: { say: ["Итог и домашнее задание."], min: 2 },
+      takeaway: "Дальше: CSS Grid — раскладка сеткой. ¦ Keyingisi: CSS Grid — to'r bilan joylashtirish. ¦ Next: CSS Grid — layout with a grid.",
+      notes: { say: ["Итог."], min: 2 },
     },
   ],
 });
