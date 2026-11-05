@@ -5,137 +5,140 @@ const SPY = `${HEAD}\n<div class="row g-0">\n  <nav id="toc" class="col-4 p-3">\
 const STEP_HTML = `${HEAD}\n<div class="container py-3" style="max-width: 520px">\n  <div class="progress mb-3" role="progressbar" aria-valuemin="0" aria-valuemax="100">\n    <div class="progress-bar" id="bar" style="width: 33%">Step 1 / 3</div>\n  </div>\n  <div class="step" data-step="1"><label class="form-label">Name</label><input class="form-control"></div>\n  <div class="step d-none" data-step="2"><label class="form-label">Phone</label><input class="form-control"></div>\n  <div class="step d-none" data-step="3"><h5>🎉 All set!</h5></div>\n  <button class="btn btn-primary mt-3" id="next">Next →</button>\n</div>`;
 const STEP_JS = `let step = 1;\nconst total = 3;\n\ndocument.getElementById('next').addEventListener('click', () => {\n  if (step === total) return;\n  step++;\n  document.querySelectorAll('.step').forEach((el) => {\n    el.classList.toggle('d-none', Number(el.dataset.step) !== step);\n  });\n  const bar = document.getElementById('bar');\n  bar.style.width = (step / total) * 100 + '%';\n  bar.textContent = 'Step ' + step + ' / ' + total;\n});`;
 
+const CSS = `.wrap{display:grid;place-items:center;height:100%;font-family:Manrope,system-ui}
+.page{display:grid;grid-template-columns:150px 1fr;width:520px;height:330px;border-radius:20px;background:#fff;box-shadow:0 10px 30px #0001;overflow:hidden}
+.toc{padding:16px 10px;border-right:2px solid #eceef3;display:grid;align-content:start;gap:8px}
+.toc span{padding:8px 12px;border-radius:10px;font-weight:800;font-size:17px;color:#5c6275}
+.toc span.on{background:#7c5cff;color:#fff}
+.view{position:relative;overflow:hidden}
+.feed{position:absolute;left:0;right:0;top:0;padding:0 18px}
+.sec{height:300px;padding-top:18px}.sec h4{margin:0 0 8px;font-size:24px}.sec p{margin:0;color:#6b7183;font-size:18px}.sec .e{font-size:60px;margin-top:14px}
+.s1 .feed{transform:translateY(-300px)}.s2 .feed{transform:translateY(-600px)}
+.form{width:460px;padding:24px;border-radius:20px;background:#fff;box-shadow:0 10px 30px #0001}
+.bar{height:26px;border-radius:13px;background:#eceef3;overflow:hidden;margin-bottom:20px}
+.fill{height:100%;width:33%;background:#7c5cff;color:#fff;font-weight:800;font-size:14px;display:grid;place-items:center}
+.p2 .fill{width:66%}.p3 .fill{width:100%;background:#0fb5a6}
+.fld{font-size:18px;font-weight:700;color:#5c6275}.inp{margin-top:6px;padding:12px;border:2px solid #e6e8ee;border-radius:12px;font-size:20px}
+.done{font-size:30px;font-weight:800;text-align:center;padding:14px}
+.nx{margin-top:18px;display:inline-block;padding:10px 22px;border-radius:12px;background:#7c5cff;color:#fff;font-weight:800}`;
+const SECS: [string, string, string][] = [['About', 'Bit Lab teaches kids to code…', '🧑‍💻'], ['Lessons', 'HTML, CSS, JS, React…', '📚'], ['Prices', 'First lesson is free.', '🎁']];
+const spy = (n: number) => `<div class="wrap"><div class="page s${n}"><div class="toc">${SECS.map((s, i) => `<span class="${i === n ? 'on' : ''}">${s[0]}</span>`).join('')}</div><div class="view"><div class="feed">${SECS.map((s) => `<div class="sec"><h4>${s[0]}</h4><p>${s[1]}</p><div class="e">${s[2]}</div></div>`).join('')}</div></div></div></div>`;
+const step = (n: number) => {
+  const body = n === 1 ? '<div class="fld">Name<div class="inp">Lola</div></div>' : n === 2 ? '<div class="fld">Phone<div class="inp">+998 90 …</div></div>' : '<div class="done">🎉 All set!</div>';
+  return `<div class="wrap"><div class="form p${n}"><div class="bar"><div class="fill">Step ${n} / 3</div></div>${body}${n < 3 ? '<span class="nx">Next →</span>' : ''}</div></div>`;
+};
+
 export default kit({
   id: 'bootstrap-t05',
   title: "Scrollspy и Stepper ¦ Scrollspy va Stepper ¦ Scrollspy and Stepper",
-  question: "Как сделать меню, которое само подсвечивает раздел при прокрутке, и пошаговую форму с прогрессом? ¦ Aylantirilganda bo'limni o'zi belgilaydigan menyu va progressli bosqichma-bosqich formani qanday qilish mumkin? ¦ How do you build a menu that highlights the section you scroll to, and a step-by-step form with progress?",
-  route: ["Задача ¦ Vazifa ¦ The task", "Scrollspy", "Stepper", "Ошибки ¦ Xatolar ¦ Bugs", "Финал ¦ Yakun ¦ Finale"],
+  question: "Как сделать меню «вы здесь» и форму по шагам с прогрессом? ¦ «Siz shu yerdasiz» menyusi va progressli bosqichma-bosqich formani qanday yasash mumkin? ¦ How do you build a “you are here” menu and a step-by-step form with progress?",
+  route: ["Scrollspy ¦ Scrollspy ¦ Scrollspy", "Stepper ¦ Stepper ¦ Stepper", "Версии ¦ Versiyalar ¦ Versions", "Практика ¦ Amaliyot ¦ Practice", "Финал ¦ Yakun ¦ Finale"],
   scenes: [
     {
       type: 'intro',
       stage: 0,
-      icon: '📍',
+      icon: '🧭',
       kicker: "Bootstrap · техническая тема 5 ¦ Bootstrap · texnik mavzu 5 ¦ Bootstrap · technical topic 5",
       title: "Длинные страницы и длинные формы ¦ Uzun sahifalar va uzun formalar ¦ Long pages and long forms",
-      chat: "что раздражает в длинных формах регистрации? ¦ uzun ro'yxatdan o'tish formalarida nima asabga tegadi? ¦ what annoys you about long sign-up forms?",
-      lead: "На длинной странице легко потеряться, а форма из 15 полей пугает. Решение: меню, которое показывает «вы здесь», и форма, разбитая на шаги с полоской прогресса. ¦ Uzun sahifada adashish oson, 15 maydonli forma esa qo'rqitadi. Yechim: «siz shu yerdasiz»ni ko'rsatadigan menyu va progress chizig'i bilan qadamlarga bo'lingan forma. ¦ It's easy to get lost on a long page, and a 15-field form is scary. The fix: a menu that shows “you are here” and a form split into steps with a progress bar.",
-      takeaway: "Scrollspy — меню следит за прокруткой. Stepper — форма по шагам. ¦ Scrollspy — menyu aylantirishni kuzatadi. Stepper — qadamma-qadam forma. ¦ Scrollspy: the menu follows your scroll. Stepper: a form in steps.",
+      chat: "что раздражает в длинных формах регистрации? ¦ uzun ro'yxatdan o'tish formalarida nima jahlni chiqaradi? ¦ what annoys you about long sign-up forms?",
+      lead: "На длинной странице легко потеряться, а форма из 15 полей пугает. Решение: меню, которое показывает «вы здесь», и форма по шагам с полоской прогресса. ¦ Uzun sahifada adashish oson, 15 maydonli forma esa qo'rqitadi. Yechim: «siz shu yerdasiz»ni ko'rsatadigan menyu va progress chizig'i bilan bosqichli forma. ¦ Long pages get confusing and 15-field forms scare people. The fix: a “you are here” menu and a step-by-step form with a progress bar.",
+      facts: ["Scrollspy — меню следит за прокруткой ¦ Scrollspy — menyu aylantirishni kuzatadi ¦ Scrollspy: the menu follows scrolling", "Stepper — форма по шагам ¦ Stepper — bosqichli forma ¦ Stepper: a form in steps", "В v5 Stepper собирают сами ¦ v5'da Stepper'ni o'zlari yig'ishadi ¦ In v5 you build Stepper yourself"],
+      takeaway: "Сначала — меню, которое само знает, где вы. ¦ Avval — qayerdaligingizni o'zi biladigan menyu. ¦ First, a menu that knows where you are.",
       notes: { say: ["Проверено: Scrollspy есть в Bootstrap 5. Готового Stepper в v5 нет — его собирают из progress и JS; в Bootstrap 6 alpha Stepper есть как компонент.", "Примеры — Bootstrap 5.3.8 с CDN, нужен интернет."], min: 3 },
     },
     {
-      type: 'walk',
-      stage: 1,
-      title: "Как настроить Scrollspy ¦ Scrollspy'ni qanday sozlash ¦ Setting up Scrollspy",
+      type: 'show',
+      stage: 0,
+      title: "Scrollspy: меню следит за прокруткой ¦ Scrollspy: menyu aylantirishni kuzatadi ¦ Scrollspy: the menu follows the scroll",
       chat: "что связывает пункт меню и раздел? ¦ menyu bandi va bo'limni nima bog'laydi? ¦ what links a menu item to a section?",
       lang: 'html',
-      code: `<nav id="toc">\n  <a class="nav-link" href="#about">About</a>\n  <a class="nav-link" href="#prices">Prices</a>\n</nav>\n<div data-bs-spy="scroll" data-bs-target="#toc"\n     tabindex="0" style="height: 300px; overflow-y: auto">\n  <h4 id="about">About</h4> …\n  <h4 id="prices">Prices</h4> …\n</div>`,
-      marks: [
-        { line: 1, text: "У меню есть id — по нему Scrollspy его найдёт. ¦ Menyuning id'si bor — Scrollspy uni shu orqali topadi. ¦ The menu has an id so Scrollspy can find it." },
-        { line: 2, text: "href=\"#about\" ведёт к разделу с id=\"about\". ¦ href=\"#about\" id=\"about\" bo'limiga olib boradi. ¦ href=\"#about\" points to the section with id=\"about\"." },
-        { line: 5, text: "data-bs-spy=\"scroll\" — следить за прокруткой этого блока, data-bs-target — какое меню подсвечивать. ¦ data-bs-spy=\"scroll\" — shu blok aylantirilishini kuzatish, data-bs-target — qaysi menyuni belgilash. ¦ data-bs-spy=\"scroll\" watches this block's scrolling; data-bs-target says which menu to highlight." },
-        { line: 6, text: "Блоку нужна высота и overflow — иначе ему нечего прокручивать. ¦ Blokka balandlik va overflow kerak — aks holda aylantiradigan narsa bo'lmaydi. ¦ The block needs a height and overflow, or there's nothing to scroll." },
+      css: CSS,
+      steps: [
+        { code: '<nav id="toc">\n  <a href="#about">About</a>\n  <a href="#lessons">Lessons</a>\n  <a href="#prices">Prices</a>\n</nav>', line: 2, html: spy(0), say: "Меню с id и ссылками на разделы. Мы в начале — горит «About». ¦ id'li va bo'limlarga havolali menyu. Biz boshidamiz — «About» yonmoqda. ¦ A menu with an id and links to sections. At the top, “About” is lit." },
+        { code: '<div data-bs-spy="scroll"\n     data-bs-target="#toc">\n  <h4 id="about">…\n  <h4 id="lessons">…', line: 4, html: spy(1), say: "Прокрутили вниз — меню само подсветило «Lessons»! ¦ Pastga aylantirdik — menyu «Lessons»ni o'zi belgiladi! ¦ Scroll down and the menu lights “Lessons” by itself!" },
+        { code: '  <h4 id="prices">…\n</div>', line: 1, html: spy(2), say: "Ещё ниже — горит «Prices». Ни строчки нашего JS. ¦ Yana pastroq — «Prices» yonmoqda. Bizning JS'dan bitta qator ham yo'q. ¦ Further down, “Prices” lights up. Not a line of our JS." },
       ],
-      takeaway: "Меню с id → ссылки #раздел → блок с data-bs-spy и разделы с такими же id. ¦ id'li menyu → #bo'lim havolalari → data-bs-spy'li blok va shunday id'li bo'limlar. ¦ A menu with an id → #section links → a data-bs-spy block with sections using the same ids.",
-      notes: { say: ["→ по строкам."], min: 4 },
+      takeaway: "Меню с id → ссылки #раздел → блок с data-bs-spy. ¦ id'li menyu → #bo'lim havolalari → data-bs-spy'li blok. ¦ Menu with an id → #section links → a block with data-bs-spy.",
+      notes: { say: ["Блоку нужна высота и overflow — иначе ему нечего прокручивать."], min: 5 },
     },
     {
-      type: 'live',
+      type: 'show',
       stage: 1,
-      title: "Меню «вы здесь» ¦ «Siz shu yerdasiz» menyusi ¦ A “you are here” menu",
-      chat: "какой раздел добавим? ¦ qanday bo'lim qo'shamiz? ¦ which section shall we add?",
-      task: "✍️ Прокручивайте правую колонку в превью и смотрите на меню (нужен интернет) ¦ ✍️ Prevyudagi o'ng ustunni aylantiring va menyuga qarang (internet kerak) ¦ ✍️ Scroll the right column in the preview and watch the menu (needs internet)",
-      steps: [{ label: 'Scrollspy', html: SPY }],
-      takeaway: "Активный пункт меню подсвечивается сам — без единой строки вашего JS. ¦ Faol menyu bandi o'zi belgilanadi — sizning bitta ham JS qatoringizsiz. ¦ The active item lights up by itself — without a line of your own JS.",
-      notes: { say: ["Добавьте раздел «Contacts» по просьбе чата: пункт меню + h4 с id."], min: 5 },
+      title: "Stepper: форма по шагам ¦ Stepper: bosqichli forma ¦ Stepper: a form in steps",
+      chat: "сколько шагов в идеальной форме? ¦ ideal formada nechta qadam bo'ladi? ¦ how many steps make an ideal form?",
+      lang: 'html',
+      css: CSS,
+      steps: [
+        { code: '<div class="progress">\n  <div class="progress-bar"\n       style="width: 33%">\n    Step 1 / 3\n  </div>\n</div>', line: 3, html: step(1), say: "Шаг 1: только имя. Полоска заполнена на треть. ¦ 1-qadam: faqat ism. Chiziq uchdan birga to'lgan. ¦ Step 1: just a name. The bar is a third full." },
+        { code: "step++;\nbar.style.width =\n  (step / total) * 100 + '%';", lang: 'js', line: 2, html: step(2), say: "«Далее» — JS прибавил шаг и растянул полоску до 66%. ¦ «Keyingi» — JS qadamni oshirdi va chiziqni 66% gacha cho'zdi. ¦ “Next”: JS adds a step and stretches the bar to 66%." },
+        { code: "// step 3 / 3\nbar.style.width = '100%';", lang: 'js', line: 2, html: step(3), say: "Последний шаг — полоска полная и зелёная. Готово! ¦ Oxirgi qadam — chiziq to'liq va yashil. Tayyor! ¦ Last step: the bar is full and green. Done!" },
+      ],
+      takeaway: "Маленькие шаги + видимый прогресс = форму доходят до конца. ¦ Kichik qadamlar + ko'rinadigan progress = formani oxirigacha to'ldirishadi. ¦ Small steps plus visible progress mean people finish the form.",
+      notes: { min: 5 },
     },
     {
       type: 'poll',
       stage: 2,
       title: "Есть ли Stepper в Bootstrap 5? ¦ Bootstrap 5'da Stepper bormi? ¦ Does Bootstrap 5 have a Stepper?",
-      chat: "голосуйте 1–3 ¦ 1–3 bilan ovoz bering ¦ vote 1–3",
+      chat: "голосуйте 1–3 ¦ 1–3 ovoz bering ¦ vote 1–3",
       options: [
         { label: "Да, готовый компонент ¦ Ha, tayyor komponent ¦ Yes, a ready component" },
-        { label: "Нет — собирают из progress, кнопок и JS ¦ Yo'q — progress, tugmalar va JS'dan yig'iladi ¦ No — it's built from progress, buttons and JS", detail: "Верно ✔ ¦ To'g'ri ✔ ¦ Correct ✔" },
-        { label: "Есть только в Tilda ¦ Faqat Tilda'da bor ¦ Only in Tilda" },
+        { label: "Нет — собирают из progress, кнопок и JS ¦ Yo'q — progress, tugmalar va JS'dan yig'ishadi ¦ No — you build it from progress, buttons and JS" },
+        { label: "Есть только в CSS ¦ Faqat CSS'da bor ¦ Only in CSS" },
       ],
       correct: 1,
-      result: "В Bootstrap 5 нет компонента Stepper — его делают сами. В Bootstrap 6 alpha появился Stepper, но для текущих проектов собираем вручную. ¦ Bootstrap 5'da Stepper komponenti yo'q — uni o'zlari yasaydi. Bootstrap 6 alpha'da Stepper paydo bo'ldi, lekin hozirgi loyihalar uchun qo'lda yig'amiz. ¦ Bootstrap 5 has no Stepper component — you build it. Bootstrap 6 alpha adds one, but for current projects we build it by hand.",
-      takeaway: "Не всё есть «из коробки» — иногда компонент собирают из простых частей. ¦ Hamma narsa «qutidan» bo'lmaydi — ba'zan komponent oddiy qismlardan yig'iladi. ¦ Not everything comes out of the box — sometimes you assemble a component from simple parts.",
-      notes: { say: ["Голосование. Хороший повод показать: проверяйте документацию, а не верьте на слово."], min: 3 },
-    },
-    {
-      type: 'flow',
-      stage: 2,
-      title: "Длинная форма по шагам ¦ Uzun forma qadamlar bo'yicha ¦ A long form in steps",
-      chat: "на сколько шагов вы бы разбили регистрацию? ¦ ro'yxatdan o'tishni nechta qadamga bo'lgan bo'lardingiz? ¦ how many steps would you split a sign-up into?",
-      nodes: [
-        { icon: '👤', label: "1. Контакты ¦ 1. Kontaktlar ¦ 1. Contacts", text: "Имя и телефон — самое простое, человек легко начинает. ¦ Ism va telefon — eng osoni, inson oson boshlaydi. ¦ Name and phone — the easiest bit, so people start easily." },
-        { icon: '🏠', label: "2. Адрес ¦ 2. Manzil ¦ 2. Address", text: "Город и адрес доставки. ¦ Shahar va yetkazib berish manzili. ¦ City and delivery address." },
-        { icon: '💳', label: "3. Оплата ¦ 3. To'lov ¦ 3. Payment", text: "Способ оплаты — в конце, когда человек уже «вложился». ¦ To'lov usuli — oxirida, inson allaqachon «sarmoya kiritganida». ¦ Payment last, once the person is already invested." },
-        { icon: '🎉', label: "Готово ¦ Tayyor ¦ Done", text: "Полоска прогресса заполнилась — приятное чувство завершения. ¦ Progress chizig'i to'ldi — tugatishning yoqimli hissi. ¦ The progress bar is full — a nice feeling of completion." },
-      ],
-      takeaway: "Шаги + прогресс превращают пугающую форму в короткие задания. ¦ Qadamlar + progress qo'rqinchli formani qisqa vazifalarga aylantiradi. ¦ Steps plus progress turn a scary form into short tasks.",
-      notes: { say: ["Шагайте →."], min: 3 },
+      result: "В Bootstrap 5 Stepper собирают сами, а в Bootstrap 6 alpha он появился готовым. ¦ Bootstrap 5'da Stepper'ni o'zlari yig'ishadi, Bootstrap 6 alpha'da esa u tayyor holda paydo bo'ldi. ¦ In Bootstrap 5 you build it yourself; Bootstrap 6 alpha ships one ready-made.",
+      notes: { min: 2 },
     },
     {
       type: 'live',
-      stage: 2,
-      title: "Собираем Stepper сами ¦ Stepper'ni o'zimiz yig'amiz ¦ Building a Stepper ourselves",
-      chat: "какой шаг добавим в форму? ¦ formaga qanday qadam qo'shamiz? ¦ which step shall we add?",
-      task: "✍️ Нажмите ▶, затем «Next →» в превью (нужен интернет) ¦ ✍️ ▶ bosing, keyin prevyuda «Next →» ni bosing (internet kerak) ¦ ✍️ Press ▶, then “Next →” in the preview (needs internet)",
-      steps: [{ label: 'Stepper', html: STEP_HTML, js: STEP_JS }],
-      takeaway: "Stepper = шаги с d-none + progress-bar + 10 строк JS, которые переключают шаг и ширину полоски. ¦ Stepper = d-none'li qadamlar + progress-bar + qadam va chiziq kengligini almashtiradigan 10 qator JS. ¦ A Stepper is steps with d-none, a progress bar and 10 lines of JS that switch the step and bar width.",
-      notes: { say: ["Предложите сделать 4 шага: поменять total и добавить блок data-step=\"4\"."], min: 6 },
+      stage: 3,
+      title: "Меню «вы здесь» ¦ «Siz shu yerdasiz» menyusi ¦ The “you are here” menu",
+      chat: "какой раздел добавим? ¦ qaysi bo'limni qo'shamiz? ¦ which section shall we add?",
+      task: "✍️ Прокручивайте правую колонку и смотрите на меню ¦ ✍️ O'ng ustunni aylantiring va menyuga qarang ¦ ✍️ Scroll the right column and watch the menu",
+      steps: [{ label: "Scrollspy ¦ Scrollspy ¦ Scrollspy", html: SPY }],
+      takeaway: "Активный пункт подсвечивается сам. ¦ Faol band o'zi belgilanadi. ¦ The active item highlights itself.",
+      notes: { say: ["Добавьте раздел «Contacts» по просьбе чата: пункт меню + h4 с id."], min: 5 },
     },
     {
-      type: 'sort',
+      type: 'live',
       stage: 3,
-      title: "Scrollspy или Stepper? ¦ Scrollspy yoki Stepper? ¦ Scrollspy or Stepper?",
-      chat: "пишите: «длинная статья — scrollspy» ¦ yozing: «uzun maqola — scrollspy» ¦ write: “long article — scrollspy”",
-      zones: [
-        { id: 'spy', label: 'Scrollspy', icon: '📍' },
-        { id: 'step', label: 'Stepper', icon: '🪜' },
-      ],
+      title: "Свой Stepper ¦ O'z Stepper'ingiz ¦ Your own Stepper",
+      chat: "какой четвёртый шаг добавим? ¦ qaysi to'rtinchi qadamni qo'shamiz? ¦ what fourth step shall we add?",
+      task: "✍️ Нажимайте «Next» и смотрите на полоску ¦ ✍️ «Next»ni bosing va chiziqqa qarang ¦ ✍️ Click “Next” and watch the bar",
+      steps: [{ label: "Stepper ¦ Stepper ¦ Stepper", html: STEP_HTML, js: STEP_JS }],
+      takeaway: "Шаг++ → показать нужный блок → растянуть полоску. ¦ Qadam++ → kerakli blokni ko'rsatish → chiziqni cho'zish. ¦ step++ → show the right block → stretch the bar.",
+      notes: { min: 5 },
+    },
+    {
+      type: 'mission',
+      stage: 4,
+      title: "Миссия: страница курса ¦ Missiya: kurs sahifasi ¦ Mission: a course page",
+      chat: "номера ответов в чат ¦ javob raqamlarini chatga ¦ answer numbers in the chat",
+      goal: "Страница понятная, форма короткая! ¦ Sahifa tushunarli, forma qisqa! ¦ Clear page, short form!",
       items: [
-        { text: "Длинная статья с оглавлением ¦ Mundarijali uzun maqola ¦ A long article with contents", zone: 'spy' },
-        { text: "Лендинг с разделами «О нас», «Цены», «Контакты» ¦ «Biz haqimizda», «Narxlar», «Kontaktlar» bo'limli lending ¦ A landing page with About, Prices, Contacts", zone: 'spy' },
-        { text: "Документация с боковым меню ¦ Yon menyuli hujjatlar ¦ Docs with a side menu", zone: 'spy' },
-        { text: "Оформление заказа в 3 шага ¦ 3 qadamda buyurtma rasmiylashtirish ¦ A 3-step checkout", zone: 'step' },
-        { text: "Регистрация на курс ¦ Kursga ro'yxatdan o'tish ¦ Course registration", zone: 'step' },
-        { text: "Опрос из 10 вопросов ¦ 10 ta savolli so'rovnoma ¦ A 10-question survey", zone: 'step' },
+        { title: "Scrollspy не работает ¦ Scrollspy ishlamayapti ¦ Scrollspy doesn't work", choices: ["Дать блоку высоту и overflow ¦ Blokka balandlik va overflow berish ¦ Give the block a height and overflow", "Удалить меню ¦ Menyuni o'chirish ¦ Delete the menu"], correct: 0, explain: "Блоку нужно, что прокручивать. ¦ Blokka aylantiradigan narsa kerak. ¦ The block needs something to scroll." },
+        { title: "Что связывает ссылку и раздел? ¦ Havola va bo'limni nima bog'laydi? ¦ What links a link and a section?", choices: ["Одинаковый id ¦ Bir xil id ¦ The same id", "Одинаковый цвет ¦ Bir xil rang ¦ The same colour"], correct: 0, explain: "href=\"#about\" → id=\"about\". ¦ href=\"#about\" → id=\"about\". ¦ href=\"#about\" → id=\"about\"." },
+        { title: "Шаг 2 из 4 — ширина полоски? ¦ 4 dan 2-qadam — chiziq kengligi? ¦ Step 2 of 4 — bar width?", choices: ['50%', '24%'], correct: 0, explain: "2 / 4 × 100 = 50%. ¦ 2 / 4 × 100 = 50%. ¦ 2 / 4 × 100 = 50%." },
       ],
-      takeaway: "Длинная страница — Scrollspy. Длинное действие — Stepper. ¦ Uzun sahifa — Scrollspy. Uzun harakat — Stepper. ¦ A long page: Scrollspy. A long task: Stepper.",
-      notes: { say: ["Раскладка → «Проверить»."], min: 3 },
-    },
-    {
-      type: 'bugs',
-      stage: 3,
-      title: "Найдите ошибку ¦ Xatoni toping ¦ Find the bug",
-      chat: "номер строки ¦ qator raqami ¦ line number",
-      snippets: [
-        { title: "Меню не подсвечивается ¦ Menyu belgilanmayapti ¦ The menu never highlights", lang: 'html', code: `<nav id="toc">\n  <a class="nav-link" href="#price">Prices</a>\n</nav>\n<div data-bs-spy="scroll" data-bs-target="#toc" …>\n  <h4 id="prices">Prices</h4>\n</div>`, line: 2, explain: "href=\"#price\", а id=\"prices\" — не совпадает одна буква. ¦ href=\"#price\", id esa \"prices\" — bitta harf mos emas. ¦ href=\"#price\" but id=\"prices\" — one letter off.", fix: '<a class="nav-link" href="#prices">Prices</a>' },
-        { title: "Scrollspy молчит ¦ Scrollspy jim ¦ Scrollspy stays silent", lang: 'html', code: `<div data-bs-spy="scroll" data-bs-target="#toc">\n  <h4 id="about">About</h4> …\n  <h4 id="prices">Prices</h4> …\n</div>`, line: 1, explain: "У блока нет высоты и overflow-y: auto — он не прокручивается, следить не за чем. ¦ Blokda balandlik va overflow-y: auto yo'q — u aylanmaydi, kuzatadigan narsa yo'q. ¦ The block has no height or overflow-y: auto, so it doesn't scroll — nothing to watch.", fix: '<div data-bs-spy="scroll" data-bs-target="#toc" tabindex="0" style="height:300px;overflow-y:auto">' },
-        { title: "Полоска не растёт ¦ Chiziq o'smayapti ¦ The bar doesn't grow", lang: 'js', code: `step++;\nshowStep(step);\nbar.textContent = 'Step ' + step;`, line: 3, explain: "Текст обновили, а ширину — нет. Нужно ещё bar.style.width = (step / total) * 100 + '%'. ¦ Matn yangilandi, kenglik esa yo'q. Yana bar.style.width = (step / total) * 100 + '%' kerak. ¦ The text updates but not the width. Add bar.style.width = (step / total) * 100 + '%'.", fix: "bar.style.width = (step / total) * 100 + '%';" },
-      ],
-      takeaway: "Scrollspy: совпадают href и id, у блока есть высота. Stepper: обновляйте и шаг, и полоску. ¦ Scrollspy: href va id mos, blokda balandlik bor. Stepper: qadamni ham, chiziqni ham yangilang. ¦ Scrollspy: matching href and id, a block with height. Stepper: update both the step and the bar.",
-      notes: { say: ["Чат пишет номер строки — вы кликаете."], min: 4 },
+      notes: { min: 3 },
     },
     {
       type: 'finale',
       stage: 4,
-      title: "Итог модуля Bootstrap ¦ Bootstrap moduli xulosasi ¦ Bootstrap module wrap-up",
-      chat: "какой компонент Bootstrap вам понравился больше всего? ¦ Bootstrap'ning qaysi komponenti sizga eng ko'p yoqdi? ¦ which Bootstrap component did you like most?",
-      answer: "Scrollspy подсвечивает пункт меню при прокрутке: меню с id, ссылки #раздел и блок с data-bs-spy, высотой и overflow. Готового Stepper в Bootstrap 5 нет — его собирают из шагов, progress-bar и немного JS (в Bootstrap 6 alpha он появился как компонент). ¦ Scrollspy aylantirilganda menyu bandini belgilaydi: id'li menyu, #bo'lim havolalari va data-bs-spy, balandlik va overflow'li blok. Bootstrap 5'da tayyor Stepper yo'q — u qadamlar, progress-bar va bir oz JS'dan yig'iladi (Bootstrap 6 alpha'da u komponent sifatida paydo bo'ldi). ¦ Scrollspy highlights the menu item as you scroll: a menu with an id, #section links and a data-bs-spy block with height and overflow. Bootstrap 5 has no ready Stepper — build it from steps, a progress bar and a little JS (Bootstrap 6 alpha adds one).",
-      icon: '📍',
+      title: "Итог: Scrollspy и Stepper ¦ Xulosa: Scrollspy va Stepper ¦ Summary: Scrollspy and Stepper",
+      chat: "где на своём сайте используете Scrollspy? ¦ saytingizda Scrollspy'ni qayerda ishlatasiz? ¦ where will you use Scrollspy on your site?",
+      answer: "Scrollspy подсвечивает пункт меню того раздела, который сейчас на экране: меню с id, ссылки на #раздел и прокручиваемый блок с data-bs-spy=\"scroll\" и data-bs-target. Stepper делит форму на шаги с полоской прогресса; в Bootstrap 5 его собирают из progress, кнопок и пары строк JS (ширина = шаг / всего × 100%), а в Bootstrap 6 alpha он есть готовым. ¦ Scrollspy hozir ekranda turgan bo'limning menyu bandini belgilaydi: id'li menyu, #bo'lim havolalari va data-bs-spy=\"scroll\" hamda data-bs-target'li aylantiriladigan blok. Stepper formani progress chizig'i bilan qadamlarga bo'ladi; Bootstrap 5'da u progress, tugmalar va bir-ikki qator JS'dan yig'iladi (kenglik = qadam / jami × 100%), Bootstrap 6 alpha'da esa tayyor holda bor. ¦ Scrollspy highlights the menu item for the section on screen: a menu with an id, links to #sections and a scrollable block with data-bs-spy=\"scroll\" and data-bs-target. A stepper splits a form into steps with a progress bar; in Bootstrap 5 you build it from progress, buttons and a few JS lines (width = step / total × 100%), while Bootstrap 6 alpha ships one.",
+      icon: '🧭',
       badge: "Навигатор страниц ¦ Sahifalar navigatori ¦ Page navigator",
       badgeSub: "Bootstrap · техническая 5 ¦ Bootstrap · texnik 5 ¦ Bootstrap · technical 5",
       homeworkTitle: "Дома ¦ Uyda ¦ At home",
       homework: [
-        "Добавьте Scrollspy-меню на свой лендинг. ¦ Lendingingizga Scrollspy menyusini qo'shing. ¦ Add a Scrollspy menu to your landing page.",
-        "Сделайте форму регистрации в 3 шага с полоской прогресса. ¦ Progress chizig'i bilan 3 qadamli ro'yxatdan o'tish formasini qiling. ¦ Build a 3-step sign-up form with a progress bar.",
+        "Добавьте Scrollspy на длинную страницу своего сайта. ¦ Saytingizning uzun sahifasiga Scrollspy qo'shing. ¦ Add Scrollspy to a long page on your site.",
+        "Разбейте форму записи на 3 шага. ¦ Ro'yxatdan o'tish formasini 3 qadamga bo'ling. ¦ Split a sign-up form into 3 steps.",
       ],
-      takeaway: "Дальше — Tilda и Git: сайты без кода и командная работа над кодом. ¦ Keyingisi — Tilda va Git: kodsiz saytlar va kod ustida jamoaviy ish. ¦ Next: Tilda and Git — sites without code, and teamwork on code.",
-      notes: { say: ["Итог модуля Bootstrap. Анонс Tilda и Git."], min: 2 },
+      takeaway: "Технические темы Bootstrap пройдены! Дальше — общие темы. ¦ Bootstrap texnik mavzulari tugadi! Keyingisi — umumiy mavzular. ¦ Bootstrap technical topics done! Next: general topics.",
+      notes: { min: 2 },
     },
   ],
 });
