@@ -3,7 +3,7 @@
  *  - Show:    code changes step by step, the result on the right animates smoothly
  *  - Animate: icons move around a stage (packets fly, robots walk, data flows)
  */
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SceneFrame } from '../scene/SceneFrame';
 import { useSceneText, useStep } from '../scene/hooks';
@@ -145,22 +145,48 @@ function Animate() {
   }, [s]);
   const f = frames[cur];
   const st = s.steps[cur];
+  // where each actor first appears: hidden actors wait there (invisible)
+  const home = useMemo(() => {
+    const h: Record<string, Pos> = {};
+    for (const fr of frames) for (const [id, v] of Object.entries(fr.pos)) if (v && !h[id]) h[id] = v;
+    return h;
+  }, [frames]);
+
+  // Measure actors so long labels/bubbles never stick out of the stage:
+  // targets are clamped so each actor's box stays inside with a small margin.
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState<{ W: number; H: number; a: Record<string, { w: number; h: number }> }>({ W: 0, H: 0, a: {} });
+  useLayoutEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    const a: Record<string, { w: number; h: number }> = {};
+    el.querySelectorAll<HTMLElement>('[data-actor]').forEach((n) => { a[n.dataset.actor!] = { w: n.offsetWidth, h: n.offsetHeight }; });
+    setBox({ W: el.clientWidth, H: el.clientHeight, a });
+  }, [cur, s]);
+  const fit = (id: string, p: Pos): Pos => {
+    const m = box.a[id];
+    if (!m || !box.W) return p;
+    const k = p.s * 1.12;
+    const hx = Math.min(50, ((m.w * k) / 2 + 12) / box.W * 100);
+    const hy = Math.min(50, ((m.h * k) / 2 + 12) / box.H * 100);
+    return { ...p, x: Math.min(100 - hx, Math.max(hx, p.x)), y: Math.min(100 - hy, Math.max(hy, p.y)) };
+  };
 
   return (
     <SceneFrame showTakeaway={cur === s.steps.length - 1}>
       <div className="kit-anim">
-        <div className="kit-anim__stage">
+        <div className="kit-anim__stage" ref={stageRef}>
           <svg className="kit-anim__lines" viewBox="0 0 100 100" preserveAspectRatio="none">
             {(st.lines ?? []).map(([a, b], i) => {
-              const pa = f.pos[a];
-              const pb = f.pos[b];
+              const pa = f.pos[a] && fit(a, f.pos[a]!);
+              const pb = f.pos[b] && fit(b, f.pos[b]!);
               if (!pa || !pb) return null;
               return <motion.line key={`${a}-${b}-${i}`} x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.6 }} />;
             })}
           </svg>
           {(st.lines ?? []).map(([a, b, label], i) => {
-            const pa = f.pos[a];
-            const pb = f.pos[b];
+            const pa = f.pos[a] && fit(a, f.pos[a]!);
+            const pb = f.pos[b] && fit(b, f.pos[b]!);
             if (!label || !pa || !pb) return null;
             return (
               <motion.span key={`l${i}`} className="kit-anim__linelabel" style={{ left: `${(pa.x + pb.x) / 2}%`, top: `${(pa.y + pb.y) / 2}%` }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
@@ -169,15 +195,18 @@ function Animate() {
             );
           })}
           {s.actors.map((a) => {
-            const p = f.pos[a.id];
+            const raw = f.pos[a.id];
+            const p = raw && fit(a.id, raw);
+            const rest = fit(a.id, home[a.id] ?? { x: 50, y: 50, s: 1 });
             const lk = f.look[a.id];
             const pulse = st.pulse?.includes(a.id);
             return (
               <motion.div
                 key={a.id}
+                data-actor={a.id}
                 className={`kit-actor ${lk.text ? 'kit-actor--text' : ''} ${pulse ? 'is-pulse' : ''}`}
                 initial={false}
-                animate={p ? { left: `${p.x}%`, top: `${p.y}%`, scale: p.s, opacity: 1 } : { opacity: 0, scale: 0.4 }}
+                animate={p ? { left: `${p.x}%`, top: `${p.y}%`, scale: p.s, opacity: 1 } : { left: `${rest.x}%`, top: `${rest.y}%`, opacity: 0, scale: 0.4 }}
                 transition={{ type: 'spring', stiffness: 90, damping: 16 }}
               >
                 {lk.icon && <span className="kit-actor__icon">{lk.icon}</span>}
