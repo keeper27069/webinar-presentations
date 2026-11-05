@@ -66,6 +66,10 @@ export function Home() {
           })}
         </section>
       )}
+      <p className="home__credits">
+        Emoji: <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noreferrer">Twemoji</a> ·{' '}
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC-BY 4.0</a>
+      </p>
     </div>
   );
 }

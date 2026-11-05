@@ -1,3 +1,4 @@
+import { emojiHtml } from '../../emoji/html';
 import type { ComponentType, ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useUi } from '@/i18n';
@@ -484,7 +485,7 @@ function Browser() {
   const [code, setCode] = useSceneState('code', false);
   useNumberKeys((n) => n <= s.tabs.length && setTab(n - 1));
   const t = s.tabs[Math.min(tab, s.tabs.length - 1)];
-  const doc = `<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;font-family:system-ui,sans-serif}${t.css ?? ''}</style></head><body>${t.html}</body></html>`;
+  const doc = `<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;font-family:system-ui,sans-serif}${t.css ?? ''}</style></head><body>${emojiHtml(t.html)}</body></html>`;
   return (
     <SceneFrame showTakeaway={step >= 1}>
       <div className="col" style={{ height: '100%', gap: 16 }}>

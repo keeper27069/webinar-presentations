@@ -1,3 +1,4 @@
+import { emojiHtml, emojiObserverScript, emojiReactScript } from '../../emoji/html';
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { html as htmlLang } from '@codemirror/lang-html';
@@ -63,20 +64,20 @@ function buildDoc(files: CodeFiles, channel: string, react = false) {
   return `<!doctype html><html><head><meta charset="utf-8"><style>
 html,body{margin:0;font-family:Manrope,system-ui,sans-serif;font-size:22px;color:#0d1238;background:#fff}
 body{padding:24px}
-${files.css ?? ''}</style></head><body>${files.html ?? ''}
+${files.css ?? ''}</style></head><body>${emojiHtml(files.html ?? '')}
 <script>(function(){var ch=${JSON.stringify(channel)};function f(v){if(typeof v==='string')return v;try{return JSON.stringify(v)}catch(e){return String(v)}}
 function send(t,a){parent.postMessage({__lc:ch,type:t,text:Array.prototype.map.call(a,f).join(' ')},'*')}
 console.log=function(){send('log',arguments)};console.info=console.log;console.warn=console.log;console.error=function(){send('error',arguments)};
 window.onerror=function(m){var s=String(m);send(s.indexOf('${GUARD}')>=0?'guard':'error',[s.replace('Uncaught ','')]);return true};
 ${LS_SHIM.replace('__STORE__', JSON.stringify(STORE).replace(/</g, '\\u003c'))}})();</script>
-${react ? reactScripts(js) : `<script>let __lg=0;\n${js}</script>`}</body></html>`;
+${react ? reactScripts(js) : `${emojiObserverScript()}<script>let __lg=0;\n${js}</script>`}</body></html>`;
 }
 
 /** React lessons: load the vendored runtime, transform JSX, then run the code */
 function reactScripts(js: string) {
   const src = JSON.stringify(js).replace(/</g, '\\u003c');
-  return `<script src="${window.location.origin}/vendor/react-live.js"></script>
-<script>let __lg=0;try{if(!window.__jsx)throw new Error('React runtime did not load');(0,eval)(window.__jsx(${src}))}catch(e){if(e&&e.description){console.error('JSX, line '+e.lineNumber+': '+e.description)}else{throw e}}</script>`;
+  return `<script src="${window.location.origin}/vendor/react-live.js"></script>${emojiReactScript()}
+<script>let __lg=0;try{if(!window.__jsx)throw new Error('React runtime did not load');(0,eval)(window.__jsx(${src}).replace(/React\\.createElement\\(/g,'__ce('))}catch(e){if(e&&e.description){console.error('JSX, line '+e.lineNumber+': '+e.description)}else{throw e}}</script>`;
 }
 
 /** Smaller editor font for long files so more fits on the stream frame */

@@ -239,3 +239,6 @@
     display: none;
   }
 }
+
+.home__credits { margin: 40px 0 8px; font-size: 13px; color: var(--muted, #8a90b4); }
+.home__credits a { color: inherit; }

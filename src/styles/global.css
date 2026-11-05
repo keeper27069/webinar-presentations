@@ -54,3 +54,14 @@ p {
   overflow: hidden;
   clip: rect(0 0 0 0);
 }
+
+/* Emoji drawn as Twemoji SVGs (src/emoji) — sized to the surrounding text */
+img.emoji {
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  margin: 0 0.04em;
+  vertical-align: -0.18em;
+  user-select: none;
+  pointer-events: none;
+}
