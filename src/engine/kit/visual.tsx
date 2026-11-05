@@ -8,6 +8,15 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { SceneFrame } from '../scene/SceneFrame';
 import { useSceneText, useStep } from '../scene/hooks';
 import { CodeBlock } from '../code/CodeBlock';
+
+/** Shrink the code font for long lines or many lines so nothing is clipped. */
+function codeSize(code: string): number {
+  const lines = code.split('\n');
+  const wide = Math.max(...lines.map((l) => l.length));
+  let size = lines.length > 8 ? 24 : 30;
+  if (wide > 30) size = Math.min(size, Math.floor(30 * 30 / wide));
+  return Math.max(17, size);
+}
 import { emojiHtml } from '../../emoji/html';
 import type { AnimateScene, KitScene, ShowScene } from './types';
 
@@ -90,7 +99,7 @@ function Show() {
         <div className="kit-show__left">
           <AnimatePresence mode="wait">
             <motion.div key={cur} className="kit-show__code" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-              <CodeBlock code={st.code} lang={st.lang ?? s.lang ?? 'html'} activeLine={st.line} fontSize={st.code.split('\n').length > 8 ? 24 : 30} />
+              <CodeBlock code={st.code} lang={st.lang ?? s.lang ?? 'html'} activeLine={st.line} fontSize={codeSize(st.code)} />
             </motion.div>
           </AnimatePresence>
           <AnimatePresence mode="wait">
