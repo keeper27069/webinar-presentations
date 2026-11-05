@@ -82,12 +82,12 @@ const READY: Record<string, { load: LessonMeta['load']; minutes: number }> = {
   'react-g04': { load: () => import('./react/cookies'), minutes: 39 },
   'react-g05': { load: () => import('./react/inside-smartphone'), minutes: 39 },
   'react-g06': { load: () => import('./react/cross-device-apps'), minutes: 39 },
-  'react-t01': { load: () => import('./react/vite-components'), minutes: 42 },
-  'react-t02': { load: () => import('./react/usestate'), minutes: 44 },
-  'react-t03': { load: () => import('./react/todo-list'), minutes: 39 },
-  'react-t04': { load: () => import('./react/useeffect'), minutes: 40 },
-  'react-t05': { load: () => import('./react/axios-fake-api'), minutes: 41 },
-  'react-t06': { load: () => import('./react/shop-app'), minutes: 43 },
+  'react-t01': { load: () => import('./react/vite-components'), minutes: 30 },
+  'react-t02': { load: () => import('./react/usestate'), minutes: 35 },
+  'react-t03': { load: () => import('./react/todo-list'), minutes: 27 },
+  'react-t04': { load: () => import('./react/useeffect'), minutes: 36 },
+  'react-t05': { load: () => import('./react/axios-fake-api'), minutes: 30 },
+  'react-t06': { load: () => import('./react/shop-app'), minutes: 27 },
   // </kit>
 };
 
