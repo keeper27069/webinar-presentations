@@ -82,42 +82,74 @@ form.addEventListener('submit', (e) => {
 
 render();`;
 
+const PCSS = `.wrap{display:grid;place-items:center;height:100%;font-family:Manrope,system-ui}
+.app{width:400px;padding:22px;border-radius:20px;background:#fff;box-shadow:0 12px 40px #0002}
+.app h3{margin:0 0 12px;font-size:24px}
+.in{display:flex;gap:8px;margin-bottom:12px}.in span{flex:1;padding:10px 12px;border:2px solid #e6e8ee;border-radius:10px;font-size:18px;color:#16181f}.in b{padding:10px 14px;border-radius:10px;background:#16181f;color:#fff}
+.li{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:2px solid #eef1f7;font-size:19px}
+.li span{flex:1}.li.done span{text-decoration:line-through;color:#9aa1b5}.li i{font-style:normal;padding:2px 10px;border-radius:8px;background:#ff6f91;color:#fff;font-weight:800}
+.cnt{margin-top:10px;color:#6b7183;font-weight:700}`;
+const app = (typed: string, items: [string, boolean][]) =>
+  `<div class="wrap"><div class="app"><h3>📝 My tasks</h3><div class="in"><span>${typed || '&nbsp;'}</span><b>Add</b></div>${items.map(([t, d]) => `<div class="li ${d ? 'done' : ''}"><span>${t}</span><i>✕</i></div>`).join('')}<div class="cnt">${items.filter(([, d]) => !d).length} left</div></div></div>`;
+
 export default kit({
   id: 'js-t06',
-  title: "Todo-list ¦ Todo-list ¦ A Todo list",
-  question: "Как переменные, функции и DOM работают вместе в одном настоящем проекте? ¦ O'zgaruvchilar, funksiyalar va DOM bitta haqiqiy loyihada qanday birga ishlaydi? ¦ How do variables, functions and the DOM work together in one real project?",
-  route: ["План ¦ Reja ¦ Plan", "Добавить ¦ Qo'shish ¦ Add", "Удалить и отметить ¦ O'chirish va belgilash ¦ Delete and tick", "Данные → экран ¦ Ma'lumot → ekran ¦ Data → screen", "Финал ¦ Yakun ¦ Finale"],
+  title: "Todo-list: первое настоящее приложение ¦ Todo-list: birinchi haqiqiy ilova ¦ A to-do list: your first real app",
+  question: "Как из переменных, функций и DOM собрать работающее приложение? ¦ O'zgaruvchilar, funksiyalar va DOM'dan ishlaydigan ilovani qanday yig'ish mumkin? ¦ How do variables, functions and the DOM combine into a working app?",
+  route: ["Устройство ¦ Tuzilishi ¦ How it works", "Действия ¦ Harakatlar ¦ Actions", "Сборка ¦ Yig'ish ¦ Building", "Практика ¦ Amaliyot ¦ Practice", "Финал ¦ Yakun ¦ Finale"],
   scenes: [
     {
       type: 'intro',
       stage: 0,
       icon: '📝',
       kicker: "JavaScript · техническая тема 6 ¦ JavaScript · texnik mavzu 6 ¦ JavaScript · technical topic 6",
-      title: "Первое настоящее приложение ¦ Birinchi haqiqiy ilova ¦ Your first real app",
-      chat: "какую задачу добавить в список первой? ¦ ro'yxatga birinchi qaysi vazifani qo'shamiz? ¦ which task goes on the list first?",
-      lead: "Список задач — классический первый проект программиста. В нём есть всё: ввод, кнопки, данные, условия и функции. Соберём его прямо в эфире за три шага. ¦ Vazifalar ro'yxati — dasturchining klassik birinchi loyihasi. Unda hammasi bor: kiritish, tugmalar, ma'lumotlar, shartlar va funksiyalar. Uni to'g'ridan-to'g'ri efirda uch qadamda yig'amiz. ¦ A to-do list is the classic first project. It has everything: input, buttons, data, conditions and functions. We'll build it live in three steps.",
-      facts: ["Шаг 1 — добавлять ¦ 1-qadam — qo'shish ¦ Step 1: add", "Шаг 2 — удалять и отмечать ¦ 2-qadam — o'chirish va belgilash ¦ Step 2: delete and tick", "Шаг 3 — хранить в массиве ¦ 3-qadam — massivda saqlash ¦ Step 3: keep it in an array"],
-      takeaway: "Задачи для списка присылает чат! ¦ Ro'yxat uchun vazifalarni chat yuboradi! ¦ Chat supplies the tasks!",
+      title: "Собираем всё вместе ¦ Hammasini birga yig'amiz ¦ Putting it all together",
+      chat: "какие дела вы бы записали в список? ¦ ro'yxatga qanday ishlarni yozgan bo'lardingiz? ¦ what tasks would you put on the list?",
+      lead: "Todo-list — классика: добавить дело, отметить сделанным, удалить. Внутри — всё, что мы уже знаем: список в переменной, функции и DOM. ¦ Todo-list — klassika: ish qo'shish, bajarilgan deb belgilash, o'chirish. Ichida — biz allaqachon biladigan hamma narsa: o'zgaruvchidagi ro'yxat, funksiyalar va DOM. ¦ A to-do list is a classic: add a task, mark it done, delete it. Inside is everything we know: a list in a variable, functions and the DOM.",
+      facts: ["Добавить ¦ Qo'shish ¦ Add", "Отметить сделанным ¦ Bajarilgan deb belgilash ¦ Mark done", "Удалить и посчитать ¦ O'chirish va sanash ¦ Delete and count"],
+      takeaway: "Смотрим, как данные бегут по приложению. ¦ Ma'lumotlar ilova bo'ylab qanday yugurishini ko'ramiz. ¦ Watch data flow through the app.",
       notes: { min: 3 },
     },
     {
-      type: 'flow',
+      type: 'animate',
       stage: 0,
-      title: "План приложения ¦ Ilova rejasi ¦ The app plan",
-      chat: "чего не хватает в плане? ¦ rejada nima yetishmayapti? ¦ what's missing from the plan?",
-      nodes: [
-        { icon: '⌨️', label: "Ввод ¦ Kiritish ¦ Input", text: "Пользователь пишет задачу и жмёт Add или Enter. ¦ Foydalanuvchi vazifani yozib, Add yoki Enter'ni bosadi. ¦ The user types a task and hits Add or Enter." },
-        { icon: '🛡️', label: "Проверка ¦ Tekshiruv ¦ Check", text: "Пустые задачи не добавляем. ¦ Bo'sh vazifalarni qo'shmaymiz. ¦ No empty tasks." },
-        { icon: '➕', label: "Добавить ¦ Qo'shish ¦ Add", text: "Создаём <li> и кладём в список. ¦ <li> yaratib, ro'yxatga solamiz. ¦ Create an <li> and put it in the list." },
-        { icon: '✅', label: "Отметить / удалить ¦ Belgilash / o'chirish ¦ Tick / delete", text: "Клик по тексту — сделано, ✕ — удалить. ¦ Matnga bosish — bajarildi, ✕ — o'chirish. ¦ Click the text to tick, ✕ to delete." },
-        { icon: '🔢', label: "Счётчик ¦ Hisoblagich ¦ Counter", text: "Сколько задач осталось. ¦ Nechta vazifa qoldi. ¦ How many tasks are left." },
+      title: "Путь одного дела ¦ Bitta ishning yo'li ¦ The journey of one task",
+      chat: "где хранится список, пока страница открыта? ¦ sahifa ochiq ekan, ro'yxat qayerda saqlanadi? ¦ where does the list live while the page is open?",
+      actors: [
+        { id: 'in', icon: '✍️', label: "Поле ввода ¦ Kiritish maydoni ¦ Input" },
+        { id: 'arr', icon: '📦', label: "Массив tasks ¦ tasks massivi ¦ tasks array" },
+        { id: 'fn', icon: '⚙️', label: 'render()' },
+        { id: 'ui', icon: '📋', label: "Список на экране ¦ Ekrandagi ro'yxat ¦ List on screen" },
+        { id: 't', text: "🛒 Buy bread" },
       ],
-      takeaway: "Сначала план словами — потом код. Так проще не запутаться. ¦ Avval so'z bilan reja — keyin kod. Shunda adashib ketmaslik osonroq. ¦ Plan in words first, then code. That keeps you from getting lost.",
-      notes: { min: 3 },
+      steps: [
+        { say: "Вы пишете «Buy bread» и жмёте Add. ¦ «Buy bread» deb yozib, Add'ni bosasiz. ¦ You type “Buy bread” and press Add.", at: { in: [12, 50], t: [12, 20, 0.8] } },
+        { say: "Дело попадает в массив tasks — список в памяти. ¦ Ish tasks massiviga — xotiradagi ro'yxatga tushadi. ¦ The task goes into the tasks array — a list in memory.", at: { arr: [38, 50], t: [38, 20, 0.8] }, lines: [['in', 'arr', 'push']] },
+        { say: "Функция render берёт массив и рисует список. ¦ render funksiyasi massivni olib, ro'yxatni chizadi. ¦ The render function takes the array and draws the list.", at: { fn: [64, 50] }, lines: [['in', 'arr', 'push'], ['arr', 'fn']] },
+        { say: "Дело появилось на экране! ¦ Ish ekranda paydo bo'ldi! ¦ The task appears on screen!", at: { ui: [88, 50, 1.2], t: [88, 20, 0.8] }, lines: [['in', 'arr', 'push'], ['arr', 'fn'], ['fn', 'ui']], pulse: ['ui'] },
+      ],
+      takeaway: "Данные (массив) → render() → экран. Меняем данные — перерисовываем. ¦ Ma'lumotlar (massiv) → render() → ekran. Ma'lumotlarni o'zgartiramiz — qayta chizamiz. ¦ Data (array) → render() → screen. Change the data, redraw.",
+      notes: { min: 4 },
+    },
+    {
+      type: 'show',
+      stage: 1,
+      title: "Три действия списка ¦ Ro'yxatning uchta harakati ¦ The list's three actions",
+      chat: "какое дело добавим? ¦ qaysi ishni qo'shamiz? ¦ which task shall we add?",
+      lang: 'js',
+      css: PCSS,
+      steps: [
+        { code: "tasks.push({ text: 'Buy bread', done: false });\nrender();", line: 1, html: app('', [['🛒 Buy bread', false]]), say: "Добавить: push кладёт дело в конец массива. ¦ Qo'shish: push ishni massiv oxiriga qo'yadi. ¦ Add: push puts the task at the end of the array." },
+        { code: "tasks.push({ text: 'Homework', done: false });\nrender();", line: 1, html: app('', [['🛒 Buy bread', false], ['📚 Homework', false]]), say: "Ещё одно дело — счётчик «2 left». ¦ Yana bitta ish — «2 left» hisoblagichi. ¦ Another task — the counter shows “2 left”." },
+        { code: "tasks[0].done = true;\nrender();", line: 1, html: app('', [['🛒 Buy bread', true], ['📚 Homework', false]]), say: "Отметить: done = true — дело зачёркнуто, осталось 1. ¦ Belgilash: done = true — ish chizildi, 1 ta qoldi. ¦ Mark done: done = true strikes it through — 1 left." },
+        { code: "tasks.splice(0, 1);\nrender();", line: 1, html: app('', [['📚 Homework', false]]), say: "Удалить: splice убирает дело из массива. ¦ O'chirish: splice ishni massivdan olib tashlaydi. ¦ Delete: splice removes the task from the array." },
+      ],
+      takeaway: "Каждое действие: изменить массив → вызвать render(). ¦ Har bir harakat: massivni o'zgartirish → render() chaqirish. ¦ Each action: change the array → call render().",
+      notes: { min: 5 },
     },
     {
       type: 'live',
-      stage: 1,
+      stage: 3,
       title: "Шаг 1: добавляем задачи ¦ 1-qadam: vazifalarni qo'shamiz ¦ Step 1: adding tasks",
       chat: "присылайте задачи — я добавлю! ¦ vazifalarni yuboring — men qo'shaman! ¦ send tasks — I'll add them!",
       task: "✍️ Пишите задачу и жмите Enter ¦ ✍️ Vazifani yozing va Enter'ni bosing ¦ ✍️ Type a task and press Enter",
@@ -129,7 +161,7 @@ export default kit({
     },
     {
       type: 'live',
-      stage: 2,
+      stage: 3,
       title: "Шаг 2: отмечаем и удаляем ¦ 2-qadam: belgilaymiz va o'chiramiz ¦ Step 2: ticking and deleting",
       chat: "кликните задачу — она зачеркнётся? ¦ vazifaga bosing — u chiziladimi? ¦ click a task — does it strike through?",
       task: "✍️ Клик по тексту — сделано, ✕ — удалить ¦ ✍️ Matnga bosish — bajarildi, ✕ — o'chirish ¦ ✍️ Click text to tick, ✕ to delete",
@@ -138,16 +170,6 @@ export default kit({
       ],
       takeaway: "trim() убирает пробелы, return останавливает пустой ввод, classList.toggle и remove() делают остальное. ¦ trim() bo'sh joylarni olib tashlaydi, return bo'sh kiritishni to'xtatadi, classList.toggle va remove() qolganini qiladi. ¦ trim() strips spaces, return stops empty input, classList.toggle and remove() do the rest.",
       notes: { say: ["textContent, а не innerHTML для текста задачи — так пользователь не сможет вставить свой HTML-код."], min: 7 },
-    },
-    {
-      type: 'compare',
-      stage: 3,
-      title: "Два подхода ¦ Ikki yondashuv ¦ Two approaches",
-      chat: "почему справа проще посчитать «осталось»? ¦ nega o'ngda «qoldi»ni hisoblash osonroq? ¦ why is “left” easier to count on the right?",
-      left: { icon: '🧱', label: "Правим DOM напрямую ¦ DOM'ni to'g'ridan-to'g'ri tahrirlaymiz ¦ Edit the DOM directly", points: ["Данные живут только в HTML ¦ Ma'lumotlar faqat HTML'da yashaydi ¦ Data lives only in the HTML", "Чтобы посчитать — ищем элементы ¦ Hisoblash uchun — elementlarni qidiramiz ¦ To count, search the elements", "Сложно сохранить ¦ Saqlash qiyin ¦ Hard to save"] },
-      right: { icon: '📊', label: "Массив + render() ¦ Massiv + render() ¦ Array + render()", points: ["Данные — в массиве tasks ¦ Ma'lumotlar — tasks massivida ¦ Data lives in a tasks array", "render() рисует экран из массива ¦ render() ekranni massivdan chizadi ¦ render() draws the screen from it", "Легко посчитать и сохранить ¦ Hisoblash va saqlash oson ¦ Easy to count and save"] },
-      verdict: "Справа — главный принцип современных интерфейсов: данные → экран. Именно так работает React. ¦ O'ngda — zamonaviy interfeyslarning asosiy tamoyili: ma'lumot → ekran. React aynan shunday ishlaydi. ¦ On the right is the core idea of modern UIs: data → screen. That's exactly how React works.",
-      notes: { say: ["Это мост к модулю React."], min: 4 },
     },
     {
       type: 'live',
@@ -162,61 +184,34 @@ export default kit({
       notes: { say: ["Покажите tasks в консоли после нескольких действий: console.log(tasks)."], min: 8 },
     },
     {
-      type: 'walk',
-      stage: 3,
-      title: "Разбираем render() ¦ render()ni tahlil qilamiz ¦ Unpacking render()",
-      chat: "зачем первой строкой очищать список? ¦ nega birinchi qatorda ro'yxat tozalanadi? ¦ why clear the list on the first line?",
-      code: `function render() {\n  list.innerHTML = '';\n  tasks.forEach((task, i) => {\n    // create <li> for each task\n  });\n  const left = tasks.filter((t) => !t.done).length;\n  count.textContent = 'Left: ' + left;\n}`,
-      lang: 'js',
-      marks: [
-        { line: 2, text: "Стираем старый список, иначе задачи будут дублироваться. ¦ Eski ro'yxatni o'chiramiz, aks holda vazifalar takrorlanadi. ¦ Wipe the old list, or tasks would duplicate." },
-        { line: 3, text: "forEach — цикл по массиву: task — задача, i — её номер. ¦ forEach — massiv bo'yicha tsikl: task — vazifa, i — uning raqami. ¦ forEach loops the array: task is the item, i its index." },
-        { line: 6, text: "filter оставляет невыполненные, length — их количество. ¦ filter bajarilmaganlarni qoldiradi, length — ularning soni. ¦ filter keeps unfinished ones; length counts them." },
-      ],
-      takeaway: "render() — одна функция, которая знает, как превратить данные в экран. ¦ render() — ma'lumotlarni ekranga aylantirishni biladigan bitta funksiya. ¦ render() is one function that knows how to turn data into a screen.",
-      notes: { min: 4 },
-    },
-    {
-      type: 'bugs',
-      stage: 3,
-      title: "Баги Todo-list ¦ Todo-list buglari ¦ Todo-list bugs",
-      chat: "номер строки с ошибкой ¦ xatoli qator raqami ¦ the line number with the bug",
-      snippets: [
-        { title: "Страница перезагружается ¦ Sahifa qayta yuklanadi ¦ The page reloads", lang: 'js', code: `form.addEventListener('submit', () => {\n  tasks.push({ text: input.value, done: false });\n  render();\n});`, line: 1, explain: "Без e.preventDefault() форма отправляется и страница перезагружается — задача пропадает. ¦ e.preventDefault()siz forma yuboriladi va sahifa qayta yuklanadi — vazifa yo'qoladi. ¦ Without e.preventDefault() the form submits and the page reloads — the task vanishes.", fix: `form.addEventListener('submit', (e) => {\n  e.preventDefault();` },
-        { title: "Задачи удваиваются ¦ Vazifalar ikkilanadi ¦ Tasks duplicate", lang: 'js', code: `function render() {\n  tasks.forEach((task) => {\n    const li = document.createElement('li');\n    li.textContent = task.text;\n    list.append(li);\n  });\n}`, line: 1, explain: "Список не очищается перед отрисовкой, и каждый render() добавляет всё заново. ¦ Chizishdan oldin ro'yxat tozalanmaydi va har bir render() hammasini qaytadan qo'shadi. ¦ The list isn't cleared first, so each render() adds everything again.", fix: `function render() {\n  list.innerHTML = '';` },
-      ],
-      takeaway: "preventDefault и очистка перед render() — две строки, без которых Todo «ломается». ¦ preventDefault va render()dan oldin tozalash — ularsiz Todo «buziladigan» ikki qator. ¦ preventDefault and clearing before render() — two lines a Todo can't live without.",
-      notes: { say: ["Найдите вместе с чатом."], min: 5 },
-    },
-    {
       type: 'mission',
       stage: 4,
-      title: "Миссия: Todo 2.0 ¦ Missiya: Todo 2.0 ¦ Mission: Todo 2.0",
+      title: "Миссия: улучшить список ¦ Missiya: ro'yxatni yaxshilash ¦ Mission: improve the list",
       chat: "номера ответов в чат ¦ javob raqamlarini chatga ¦ answer numbers in the chat",
-      goal: "Todo 2.0 выпущен! ¦ Todo 2.0 chiqarildi! ¦ Todo 2.0 shipped!",
+      goal: "Список удобный и без ошибок! ¦ Ro'yxat qulay va xatosiz! ¦ The list is handy and bug-free!",
       items: [
-        { title: "Не добавлять пустые задачи ¦ Bo'sh vazifalarni qo'shmaslik ¦ Skip empty tasks", choices: ["if (!text) return;", "if (text) return;"], correct: 0, explain: "Пустая строка — false, выходим. ¦ Bo'sh satr — false, chiqamiz. ¦ An empty string is false, so we exit." },
-        { title: "Где хранить задачи? ¦ Vazifalarni qayerda saqlash kerak? ¦ Where do tasks live?", choices: ["В массиве tasks ¦ tasks massivida ¦ In a tasks array", "Только в <li> ¦ Faqat <li>da ¦ Only in the <li>s"], correct: 0, explain: "Данные → экран. ¦ Ma'lumot → ekran. ¦ Data → screen." },
-        { title: "После изменения массива ¦ Massiv o'zgargandan keyin ¦ After changing the array", choices: ["Вызвать render() ¦ render() ni chaqirish ¦ Call render()", "Перезагрузить страницу ¦ Sahifani qayta yuklash ¦ Reload the page"], correct: 0, explain: "render() перерисует экран. ¦ render() ekranni qayta chizadi. ¦ render() redraws the screen." },
+        { title: "Добавить дело в массив ¦ Ishni massivga qo'shish ¦ Add a task to the array", choices: ['tasks.push(task)', 'tasks.remove(task)'], correct: 0, explain: "push — в конец. ¦ push — oxiriga. ¦ push adds to the end." },
+        { title: "После изменения массива ¦ Massiv o'zgargandan keyin ¦ After changing the array", choices: ['render()', "Ничего ¦ Hech narsa ¦ Nothing"], correct: 0, explain: "Иначе экран не обновится. ¦ Aks holda ekran yangilanmaydi. ¦ Otherwise the screen won't update." },
+        { title: "Страница перезагружается при Add ¦ Add bosilganda sahifa qayta yuklanadi ¦ The page reloads on Add", choices: ['e.preventDefault()', 'e.reload()'], correct: 0, explain: "Отменяем стандартную отправку формы. ¦ Formaning standart yuborilishini bekor qilamiz. ¦ Cancel the form's default submit." },
       ],
-      notes: { say: ["Ответы чата → «Проверить»."], min: 3 },
+      notes: { min: 3 },
     },
     {
       type: 'finale',
       stage: 4,
-      title: "Итог: Todo-list ¦ Xulosa: Todo-list ¦ Summary: a Todo list",
-      chat: "какую функцию добавить в Todo 3.0? ¦ Todo 3.0 ga qanday funksiya qo'shamiz? ¦ what feature goes into Todo 3.0?",
-      answer: "Todo собран из всего пройденного: событие submit с preventDefault, проверка пустого ввода, createElement, classList.toggle и remove. Лучший подход — хранить задачи в массиве объектов и рисовать экран функцией render(): поменяли данные — вызвали render(). Это главный принцип, на котором построен React. ¦ Todo o'tilgan barcha narsalardan yig'ilgan: preventDefault bilan submit hodisasi, bo'sh kiritishni tekshirish, createElement, classList.toggle va remove. Eng yaxshi yondashuv — vazifalarni obyektlar massivida saqlash va ekranni render() funksiyasi bilan chizish: ma'lumotni o'zgartirdik — render() ni chaqirdik. Bu React qurilgan asosiy tamoyil. ¦ The Todo uses everything so far: a submit event with preventDefault, an empty-input check, createElement, classList.toggle and remove. The best approach keeps tasks in an array of objects and draws the screen with render(): change the data, call render(). That's the core idea React is built on.",
+      title: "Итог: Todo-list ¦ Xulosa: Todo-list ¦ Summary: the to-do list",
+      chat: "какую функцию добавите в свой список? ¦ ro'yxatingizga qanday funksiya qo'shasiz? ¦ what feature will you add to your list?",
+      answer: "Todo-list соединяет всё изученное: дела хранятся в массиве tasks, функция render() рисует их на экране, а события формы и кнопок меняют массив. Добавить — push, отметить — done = true, удалить — splice, и после каждого изменения снова вызываем render(). e.preventDefault() не даёт форме перезагрузить страницу. ¦ Todo-list o'rganilgan hamma narsani birlashtiradi: ishlar tasks massivida saqlanadi, render() funksiyasi ularni ekranga chizadi, forma va tugmalar hodisalari esa massivni o'zgartiradi. Qo'shish — push, belgilash — done = true, o'chirish — splice, va har bir o'zgarishdan keyin yana render() chaqiramiz. e.preventDefault() formaga sahifani qayta yuklashga yo'l qo'ymaydi. ¦ A to-do list ties everything together: tasks live in the tasks array, render() draws them, and form and button events change the array. Add with push, mark done with done = true, delete with splice, and call render() after every change. e.preventDefault() stops the form reloading the page.",
       icon: '📝',
-      badge: "Строитель приложений ¦ Ilova quruvchi ¦ App builder",
+      badge: "Создатель приложений ¦ Ilovalar yaratuvchisi ¦ App maker",
       badgeSub: "JavaScript · техническая 6 ¦ JavaScript · texnik 6 ¦ JavaScript · technical 6",
       homeworkTitle: "Дома ¦ Uyda ¦ At home",
       homework: [
-        "Добавьте кнопку «Удалить выполненные». ¦ «Bajarilganlarni o'chirish» tugmasini qo'shing. ¦ Add a “Clear completed” button.",
-        "Добавьте фильтры «Все / Активные / Готовые». ¦ «Hammasi / Faol / Tayyor» filtrlarini qo'shing. ¦ Add “All / Active / Done” filters.",
+        "Добавьте кнопку «Удалить все сделанные». ¦ «Bajarilganlarning hammasini o'chirish» tugmasini qo'shing. ¦ Add a “Clear completed” button.",
+        "Не давайте добавлять пустое дело. ¦ Bo'sh ishni qo'shishga yo'l qo'ymang. ¦ Don't allow empty tasks.",
       ],
-      takeaway: "Проблема: обновите страницу — задачи пропали. Чиним в следующей теме с LocalStorage! ¦ Muammo: sahifani yangilang — vazifalar yo'qoldi. Keyingi mavzuda LocalStorage bilan tuzatamiz! ¦ The catch: reload and the tasks vanish. We fix that next time with LocalStorage!",
-      notes: { say: ["Покажите: перезагрузка стирает задачи — интрига к следующему уроку."], min: 2 },
+      takeaway: "Дальше: как сделать, чтобы список не пропадал после перезагрузки. ¦ Keyingisi: ro'yxat qayta yuklangandan keyin yo'qolmasligi uchun nima qilish kerak. ¦ Next: keeping the list after a reload.",
+      notes: { min: 2 },
     },
   ],
 });
