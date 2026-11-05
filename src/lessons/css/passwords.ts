@@ -55,6 +55,28 @@ export default kit({
       notes: { min: 5 },
     },
     {
+      type: 'animate',
+      stage: 1,
+      title: "Как сайт хранит ваш пароль ¦ Sayt parolingizni qanday saqlaydi ¦ How a site stores your password",
+      chat: "как думаете, сайт видит ваш пароль? ¦ sizningcha, sayt parolingizni ko'radimi? ¦ do you think the site can see your password?",
+      actors: [
+        { id: 'pw', text: "tiger-eats-blue-pizza-7" },
+        { id: 'mix', icon: '🌀', label: "Хеш: «мясорубка» ¦ Xesh: «go'sht maydalagich» ¦ Hash: a “mincer”" },
+        { id: 'h', text: "9f2c…e1a7" },
+        { id: 'db', icon: '🗄️', label: "База сайта ¦ Sayt bazasi ¦ The site's database" },
+        { id: 'thief', icon: '🦹', label: "Украл базу ¦ Bazani o'g'irladi ¦ Stole the database" },
+      ],
+      steps: [
+        { say: "Вы придумали пароль при регистрации. ¦ Ro'yxatdan o'tishda parol o'ylab topdingiz. ¦ You choose a password when signing up.", at: { pw: [20, 20] } },
+        { say: "Хороший сайт не хранит его, а прогоняет через «мясорубку» — хеш. ¦ Yaxshi sayt uni saqlamaydi, «go'sht maydalagich» — xesh orqali o'tkazadi. ¦ A good site doesn't store it — it runs it through a “mincer” called a hash.", at: { mix: [50, 20] }, lines: [['pw', 'mix']], pulse: ['mix'] },
+        { say: "Получается каша из символов. Обратно в пароль её не превратить. ¦ Belgilar bo'tqasi hosil bo'ladi. Uni qaytarib parolga aylantirib bo'lmaydi. ¦ Out comes a jumble that can't be turned back into the password.", at: { h: [80, 20], db: [80, 66] }, lines: [['pw', 'mix'], ['mix', 'h'], ['h', 'db']] },
+        { say: "При входе сайт снова делает хеш и сравнивает «кашу» — совпало, вход! ¦ Kirishda sayt yana xesh qiladi va «bo'tqa»ni solishtiradi — mos keldi, kirdingiz! ¦ At sign-in the site hashes again and compares the jumbles — a match lets you in!", lines: [['mix', 'h', '= ✓']], pulse: ['h'] },
+        { say: "Вор украл базу — видит только кашу. Но «123456» он угадает перебором, а длинную фразу — нет. ¦ O'g'ri bazani o'g'irladi — faqat bo'tqani ko'radi. Lekin «123456»ni saralab topadi, uzun iborani esa — yo'q. ¦ A thief steals the database and sees only jumbles. He can still guess “123456” by trying, but not a long phrase.", at: { thief: [40, 70] }, lines: [['thief', 'db', '?']], pulse: ['thief'] },
+      ],
+      takeaway: "Сайт хранит не пароль, а его хеш. Длинная фраза защищает даже при утечке. ¦ Sayt parolni emas, uning xeshini saqlaydi. Uzun ibora hatto sizib chiqqanda ham himoya qiladi. ¦ Sites store a hash, not your password. A long phrase protects you even after a leak.",
+      notes: { say: ["Тема — защита: объясняем, почему длинные пароли спасают при утечках."], min: 4 },
+    },
+    {
       type: 'show',
       stage: 2,
       title: "Делаем пароль надёжным ¦ Parolni ishonchli qilamiz ¦ Making a password strong",
