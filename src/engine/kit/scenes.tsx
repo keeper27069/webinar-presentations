@@ -16,6 +16,7 @@ import { CheatSheet } from '../finale/CheatSheet';
 import { FinalMission } from '../finale/FinalMission';
 import { Achievement } from '../finale/Achievement';
 import { Bit } from '../art/Bit';
+import { VISUAL } from './visual';
 import type {
   BoardScene,
   BrowserScene,
@@ -647,6 +648,7 @@ export const KIT: Record<KitType, ComponentType> = {
   cheatsheet: Cheat,
   mission: Mission,
   finale: Finale,
+  ...VISUAL,
 };
 
 /** Number of → steps inside each scene type */
@@ -673,6 +675,9 @@ export function stepsOf(s: KitScene): number {
       return s.marks.length;
     case 'numbers':
       return s.facts.length;
+    case 'show':
+    case 'animate':
+      return s.steps.length;
     default:
       return 1;
   }

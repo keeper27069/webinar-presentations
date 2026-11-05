@@ -166,8 +166,36 @@ export interface FinaleScene extends Base {
   homework: string[];
 }
 
+/** Code on the left changes step by step; the result on the right animates smoothly */
+export interface ShowScene extends Base {
+  type: 'show';
+  lang?: CodeLang;
+  /** Shared CSS for the preview (every step adds its own `css`) */
+  css?: string;
+  steps: { code: string; lang?: CodeLang; line?: number; html: string; css?: string; say: string }[];
+}
+
+/** Icons that move around a stage, one short caption per step */
+export interface AnimateScene extends Base {
+  type: 'animate';
+  actors: { id: string; icon?: string; text?: string; label?: string }[];
+  steps: {
+    say: string;
+    /** id → [x%, y%, scale] — positions are kept until changed */
+    at?: Record<string, [number, number] | [number, number, number]>;
+    hide?: string[];
+    /** Change an actor's look from this step on */
+    set?: Record<string, { icon?: string; text?: string; label?: string }>;
+    /** Dashed lines between actors: [from, to, label?] */
+    lines?: [string, string, string?][];
+    pulse?: string[];
+  }[];
+}
+
 export type KitScene =
   | IntroScene
+  | ShowScene
+  | AnimateScene
   | PollScene
   | PredictScene
   | BoardScene

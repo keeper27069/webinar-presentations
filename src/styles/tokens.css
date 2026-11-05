@@ -1,45 +1,51 @@
 :root {
-  /* Lab palette */
-  --bg: #0a0f2e;
-  --bg-2: #111850;
-  --bg-3: #1a2266;
-  --line: rgba(160, 175, 255, 0.18);
-  --text: #eef1ff;
-  --muted: #aab3ea;
-  --surface: #f5f7ff;
-  --surface-2: #e6eaff;
-  --ink: #0d1238;
-  --ink-muted: #4a5288;
+  /* Light "Lab" palette: white canvas, soft grey cards, coral accent */
+  --bg: #f4f5f8;
+  --bg-2: #ffffff;
+  --bg-3: #eceef3;
+  --line: rgba(20, 24, 40, 0.09);
+  --text: #16181f;
+  --muted: #6b7183;
+  --surface: #ffffff;
+  --surface-2: #f2f3f7;
+  --ink: #16181f;
+  --ink-muted: #5c6275;
+  --panel: #ffffff;
+  --panel-2: #f6f7fa;
+  --panel-3: #eceef3;
+  --code-bg: #1d1f2b;
 
   --violet: #7c5cff;
   --blue: #3d7bff;
-  --cyan: #3ee6ff;
-  --pink: #ff5cc8;
-  --error: #ff6b6b;
-  --ok: #2ee59d;
-  --warn: #ffd166;
+  --cyan: #12b5c9;
+  --pink: #f0509b;
+  --error: #ef4b4b;
+  --ok: #1fb978;
+  --warn: #f5a623;
+  --coral: #f2573a;
 
-  --accent: var(--violet);
-  --accent-ink: #0d1238;
+  --accent: var(--coral);
+  --accent-ink: #ffffff;
 
-  --font-display: 'Unbounded', 'Manrope', system-ui, sans-serif;
+  --font-display: 'Manrope', system-ui, sans-serif;
   --font-body: 'Manrope', system-ui, sans-serif;
   --font-code: 'JetBrains Mono', ui-monospace, monospace;
 
   /* Sizes on the 1920×1080 stage */
   --fs-body: 32px;
   --fs-small: 26px;
-  --fs-title: 72px;
+  --fs-title: 68px;
   --fs-h2: 44px;
   --fs-code: 28px;
   --radius: 28px;
   --radius-sm: 18px;
-  --shadow: 0 24px 60px rgba(3, 6, 30, 0.45);
+  --shadow: 0 10px 30px rgba(20, 24, 40, 0.08);
+  --shadow-lg: 0 18px 50px rgba(20, 24, 40, 0.12);
 }
 
-[data-module='html'] { --accent: #ff8a3d; }
-[data-module='css'] { --accent: #4d94ff; }
-[data-module='bootstrap'] { --accent: #a07bff; }
-[data-module='tilda-git'] { --accent: #22d3c5; }
-[data-module='js'] { --accent: #ffd43b; }
-[data-module='react'] { --accent: #5ee7ff; }
+[data-module='html'] { --accent: #f2573a; }
+[data-module='css'] { --accent: #3d7bff; }
+[data-module='bootstrap'] { --accent: #7c5cff; }
+[data-module='tilda-git'] { --accent: #0fb5a6; }
+[data-module='js'] { --accent: #e9a400; --accent-ink: #1b1500; }
+[data-module='react'] { --accent: #0ea5d9; }
