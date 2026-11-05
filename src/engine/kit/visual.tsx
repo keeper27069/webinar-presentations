@@ -33,7 +33,22 @@ const PREVIEW_BASE = `
 .__in { animation: __pop 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; }
 @keyframes __pop { from { opacity: 0; transform: scale(0.6) translateY(20px); } to { opacity: 1; transform: none; } }
 img.emoji { width: 1.1em; height: 1.1em; vertical-align: -0.18em; display: inline-block; }
+.__root > .wrap:only-child > :only-child { zoom: var(--fit, 1); transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), zoom 0.4s ease; }
 `;
+
+/** Grow (or shrink) a single centred demo so it fills the preview nicely */
+function fit(root: HTMLDivElement) {
+  const wrap = root.children.length === 1 ? (root.firstElementChild as HTMLElement) : null;
+  if (!wrap || !wrap.classList.contains('wrap') || wrap.children.length !== 1) return;
+  const t = wrap.firstElementChild as HTMLElement;
+  const cur = parseFloat(root.style.getPropertyValue('--fit') || '1') || 1;
+  const r = t.getBoundingClientRect();
+  const box = root.getBoundingClientRect();
+  if (!r.width || !r.height || !box.width) return;
+  const k = Math.min((box.width * 0.84) / (r.width / cur), (box.height * 0.8) / (r.height / cur));
+  const z = Math.max(0.6, Math.min(1.6, k));
+  if (Math.abs(z - cur) > 0.03) root.style.setProperty('--fit', z.toFixed(2));
+}
 
 /** Minimal DOM morph: keeps matching nodes so CSS transitions can play */
 function morph(from: Node, to: Node) {
@@ -84,6 +99,10 @@ function AnimatedPreview({ html, css }: { html: string; css: string }) {
     const next = document.createElement('div');
     next.innerHTML = emojiHtml(html);
     morph(p.root, next);
+    const root = p.root;
+    const a = requestAnimationFrame(() => fit(root));
+    const b = window.setTimeout(() => fit(root), 800);
+    return () => { cancelAnimationFrame(a); window.clearTimeout(b); };
   }, [html, css]);
   return <div ref={host} className="kit-show__preview" />;
 }
