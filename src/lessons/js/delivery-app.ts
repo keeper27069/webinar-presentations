@@ -78,11 +78,11 @@ export default kit({
         { id: 'lo', icon: '🛵', label: 'Lola' },
       ],
       steps: [
-        { say: "Вы дома. Вокруг — 4 курьера. ¦ Siz uydasiz. Atrofda — 4 ta kuryer. ¦ You're at home with 4 couriers around.", at: { me: [50, 50, 1.3], az: [12, 80], di: [70, 38], ti: [60, 62], lo: [92, 88] } },
+        { say: "Вы дома. Вокруг — 4 курьера. ¦ Siz uydasiz. Atrofda — 4 ta kuryer. ¦ You're at home with 4 couriers around.", at: { me: [46, 46, 1.3], az: [12, 80], di: [76, 24], ti: [66, 76], lo: [92, 88] } },
         { say: "Приложение меряет расстояние до каждого. ¦ Ilova har biriga masofani o'lchaydi. ¦ The app measures the distance to each one.", lines: [['me', 'az', '5.0'], ['me', 'di', '2.2'], ['me', 'ti', '1.4'], ['me', 'lo', '5.7']] },
         { say: "Тимур ближе всех, но занят — пропускаем. ¦ Timur eng yaqin, lekin band — o'tkazib yuboramiz. ¦ Timur is closest but busy — skip him.", set: { ti: { icon: '⛔' } }, lines: [['me', 'az', '5.0'], ['me', 'di', '2.2'], ['me', 'lo', '5.7']], pulse: ['ti'] },
         { say: "Из свободных ближе всех Дина — 2.2. Заказ ей! ¦ Bo'shlar orasida eng yaqini Dina — 2.2. Buyurtma unga! ¦ Of the free ones, Dina is nearest at 2.2. She gets the order!", set: { di: { icon: '🏆', label: 'Dina ✓' } }, lines: [['me', 'di', '2.2 ✓']], pulse: ['di'] },
-        { say: "Дина едет к вам. ¦ Dina sizga kelmoqda. ¦ Dina heads your way.", at: { di: [56, 46] }, lines: [['me', 'di']] },
+        { say: "Дина едет к вам. ¦ Dina sizga kelmoqda. ¦ Dina heads your way.", at: { di: [58, 36] }, lines: [['me', 'di']] },
       ],
       takeaway: "Посчитать всем → убрать занятых → выбрать минимум. ¦ Hammaga hisoblash → bandlarni olib tashlash → minimumni tanlash. ¦ Measure everyone → drop the busy → pick the minimum.",
       notes: { min: 4 },
