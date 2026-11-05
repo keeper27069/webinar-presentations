@@ -1,36 +1,28 @@
 import { kit } from '@engine/kit';
 
-/** Code where each line is "ru ¦ uz ¦ en" → one whole block per language */
-const blk = (s: string) =>
-  [0, 1, 2]
-    .map((i) =>
-      s
-        .split('\n')
-        .map((line) => {
-          const p = line.split('¦');
-          return p.length < 3 ? line : (line.match(/^\s*/)?.[0] ?? '') + (p[i] ?? '').trim();
-        })
-        .join('\n'),
-    )
-    .join('\n¦\n');
-
-const BUGGY = blk(`повторить 3 раза: ¦ 3 marta takrorla: ¦ repeat 3 times:
-  шаг вперёд ¦ oldinga qadam ¦ move forward
-повернуть налево ¦ chapga burilish ¦ turn left
-повторить 2 раза: ¦ 2 marta takrorla: ¦ repeat 2 times:
-  шаг вперёд ¦ oldinga qadam ¦ move forward`);
-
-const IF_ELSE = blk(`повторять, пока не у цели: ¦ maqsadga yetguncha takrorla: ¦ repeat until at goal:
-  если путь впереди: ¦ agar oldinda yo'l bo'lsa: ¦ if path ahead:
-    шаг вперёд ¦ oldinga qadam ¦ move forward
-  иначе: ¦ aks holda: ¦ else:
-    повернуть направо ¦ oʻngga burilish ¦ turn right`);
+const CSS = `.wrap{display:grid;place-items:center;height:100%;font-family:Manrope,system-ui}
+.maze{position:relative;display:grid;grid-template-columns:repeat(5,70px);grid-template-rows:repeat(5,70px);gap:6px;padding:12px;border-radius:20px;background:#fff;box-shadow:0 10px 30px #0001}
+.c{border-radius:12px;background:#3a3f52}.c.p{background:#ccf3ee}
+.bot{position:absolute;width:70px;height:70px;display:grid;place-items:center;font-size:48px}
+.goal{position:absolute;width:70px;height:70px;display:grid;place-items:center;font-size:44px}
+.bang{position:absolute;width:70px;height:70px;display:grid;place-items:center;font-size:40px;opacity:0}
+.hit .bang{opacity:1}
+.tag{position:absolute;right:-12px;top:-14px;padding:4px 12px;border-radius:999px;background:#16181f;color:#fff;font:800 15px JetBrains Mono,monospace}`;
+// path: (0,4)→(2,4) up to (2,2) right to (4,2) up to (4,0)
+const PATH = new Set(['0,4', '1,4', '2,4', '2,3', '2,2', '3,2', '4,2', '4,1', '4,0']);
+const at = (x: number, y: number) => `left:${12 + x * 76}px;top:${12 + y * 76}px`;
+const maze = (x: number, y: number, tag: string, o: { face?: string; hit?: [number, number] } = {}) => {
+  let cells = '';
+  for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) cells += `<div class="c ${PATH.has(`${c},${r}`) ? 'p' : ''}"></div>`;
+  const hit = o.hit ? `<div class="bang" style="${at(o.hit[0], o.hit[1])}">💥</div>` : '';
+  return `<div class="wrap"><div class="maze ${o.hit ? 'hit' : ''}">${cells}<div class="goal" style="${at(4, 0)}">🏁</div>${hit}<div class="bot" style="${at(x, y)}">${o.face ?? '🤖'}</div><span class="tag">${tag}</span></div></div>`;
+};
 
 export default kit({
   id: 'tilda-git-t07',
-  title: "Отладка, Repeat и условия (Blockly) ¦ Debugging, Repeat va shartlar (Blockly) ¦ Debugging, Repeat and conditions (Blockly)",
-  question: "Как найти ошибку в программе самому и научить её принимать решения? ¦ Dasturdagi xatoni qanday qilib o'zingiz topish va unga qaror qabul qilishni o'rgatish mumkin? ¦ How do you find a bug yourself and teach a program to make decisions?",
-  route: ["Что такое баг ¦ Bug nima ¦ What a bug is", "Отладка ¦ Debugging ¦ Debugging", "Repeat ¦ Repeat ¦ Repeat", "if-else ¦ if-else ¦ if-else", "Финал ¦ Yakun ¦ Finale"],
+  title: "Отладка, Repeat и условия (Blockly) ¦ Xatolarni tuzatish, Repeat va shartlar (Blockly) ¦ Debugging, Repeat and conditions (Blockly)",
+  question: "Как самому найти ошибку в программе и научить её принимать решения? ¦ Dasturdagi xatoni o'zing qanday topish va uni qaror qabul qilishga o'rgatish mumkin? ¦ How do you find a bug yourself and teach a program to make decisions?",
+  route: ["Баг ¦ Xato ¦ The bug", "Отладка ¦ Tuzatish ¦ Debugging", "Условие ¦ Shart ¦ Conditions", "Проверка ¦ Tekshiruv ¦ Check", "Финал ¦ Yakun ¦ Finale"],
   scenes: [
     {
       type: 'intro',
@@ -38,140 +30,95 @@ export default kit({
       icon: '🐞',
       kicker: "Tilda · Git · техническая тема 7 ¦ Tilda · Git · texnik mavzu 7 ¦ Tilda · Git · technical topic 7",
       title: "Робот врезался в стену ¦ Robot devorga urildi ¦ The robot hit a wall",
-      chat: "почему программа может делать не то, что мы хотели? ¦ dastur nega biz xohlagan narsani qilmasligi mumkin? ¦ why might a program not do what we wanted?",
-      lead: "Баг — ошибка в программе. Компьютер не ошибается: он точно выполняет то, что мы написали. Значит, ошибку ищем в своих шагах. ¦ Bug — dasturdagi xato. Kompyuter xato qilmaydi: u biz yozgan narsani aniq bajaradi. Demak, xatoni o'z qadamlarimizdan qidiramiz. ¦ A bug is a mistake in a program. The computer doesn't err: it does exactly what we wrote. So we look for the mistake in our own steps.",
-      facts: [
-        "Найти, где сломалось ¦ Qayerda buzilganini topish ¦ Find where it broke",
-        "Понять почему ¦ Nima uchunligini tushunish ¦ Understand why",
-        "Исправить и проверить ¦ Tuzatish va tekshirish ¦ Fix and re-test",
-      ],
-      takeaway: "Отладка — нормальная часть работы программиста, а не провал. ¦ Debugging — dasturchi ishining oddiy qismi, muvaffaqiyatsizlik emas. ¦ Debugging is a normal part of programming, not a failure.",
-      notes: { say: ["Блоки здесь показаны текстом. Для живой отладки откройте Blockly-лабиринт."], switch: "Blockly ¦ Blockly ¦ Blockly", min: 3 },
+      chat: "почему программа может делать не то, что мы хотели? ¦ nega dastur biz xohlagan narsani qilmasligi mumkin? ¦ why might a program do something we didn't want?",
+      lead: "Баг — ошибка в программе. Компьютер не ошибается: он точно выполняет то, что мы написали. Значит, ошибку ищем в своих шагах. ¦ Bag — dasturdagi xato. Kompyuter xato qilmaydi: u biz yozganini aniq bajaradi. Demak, xatoni o'z qadamlarimizdan qidiramiz. ¦ A bug is a mistake in a program. Computers don't slip: they do exactly what we wrote. So we look for the mistake in our steps.",
+      facts: ["Найти, где сломалось ¦ Qayerda buzilganini topish ¦ Find where it broke", "Понять почему ¦ Nega ekanini tushunish ¦ Understand why", "Исправить и проверить ¦ Tuzatish va tekshirish ¦ Fix and re-test"],
+      takeaway: "Отладка — нормальная часть работы, а не провал. ¦ Tuzatish — ishning odatiy qismi, muvaffaqiyatsizlik emas. ¦ Debugging is a normal part of the job, not a failure.",
+      notes: { say: ["Для живой отладки откройте Blockly-лабиринт."], min: 3 },
     },
     {
-      type: 'flow',
+      type: 'show',
       stage: 1,
-      title: "4 шага отладки ¦ Debuggingning 4 qadami ¦ 4 steps of debugging",
-      chat: "какой шаг новички чаще всего пропускают? ¦ yangi boshlovchilar qaysi qadamni ko'proq o'tkazib yuborishadi? ¦ which step do beginners skip most?",
-      nodes: [
-        { icon: '▶️', label: "Запустить ¦ Ishga tushirish ¦ Run", text: "Смотрим, что делает программа на самом деле. ¦ Dastur aslida nima qilayotganiga qaraymiz. ¦ Watch what the program actually does." },
-        { icon: '📍', label: "Найти место ¦ Joyni topish ¦ Locate", text: "На каком шаге робот свернул не туда? ¦ Robot qaysi qadamda noto'g'ri burildi? ¦ At which step did the robot go wrong?" },
-        { icon: '🧠', label: "Понять причину ¦ Sababni tushunish ¦ Understand", text: "Не тот блок? Не то число? Не тот порядок? ¦ Noto'g'ri blokmi? Noto'g'ri raqammi? Noto'g'ri tartibmi? ¦ Wrong block? Wrong number? Wrong order?" },
-        { icon: '✅', label: "Исправить и запустить ¦ Tuzatish va ishga tushirish ¦ Fix and re-run", text: "Меняем одно — и снова проверяем. ¦ Bittasini o'zgartiramiz — va yana tekshiramiz. ¦ Change one thing and test again." },
-      ],
-      takeaway: "Меняйте по одной вещи за раз — так понятно, что именно помогло. ¦ Bir vaqtda bitta narsani o'zgartiring — shunda aynan nima yordam bergani tushunarli. ¦ Change one thing at a time so you know what helped.",
-      notes: { say: ["Частый пропуск — шаг 3: меняют блоки наугад, не понимая причину."], min: 4 },
-    },
-    {
-      type: 'walk',
-      stage: 1,
-      title: "Отладка по шагам ¦ Qadamma-qadam debugging ¦ Debugging step by step",
-      chat: "на какой строке ошибка? ¦ xato qaysi qatorda? ¦ which line has the bug?",
-      code: BUGGY,
+      title: "Ищем баг по шагам ¦ Xatoni qadam-baqadam qidiramiz ¦ Hunting the bug step by step",
+      chat: "на каком шаге робот свернул не туда? ¦ robot qaysi qadamda noto'g'ri burildi? ¦ at which step did the robot go wrong?",
       lang: 'text',
-      marks: [
-        { line: 1, text: "Робот проходит 3 клетки — до поворота как раз 3. Пока всё хорошо. ¦ Robot 3 katak yuradi — burilishgacha aynan 3 ta. Hozircha hammasi yaxshi. ¦ The robot walks 3 cells — exactly 3 to the turn. All good so far." },
-        { line: 3, text: "А дорога поворачивает направо! Здесь баг: «налево» → «направо». ¦ Yo'l esa o'ngga buriladi! Xato shu yerda: «chapga» → «o'ngga». ¦ But the road turns right! Here's the bug: “left” → “right”." },
-        { line: 4, text: "После исправления проверяем дальше: 2 шага до звезды — верно. ¦ Tuzatgandan keyin davom etib tekshiramiz: yulduzgacha 2 qadam — to'g'ri. ¦ After the fix, keep checking: 2 steps to the star — correct." },
+      css: CSS,
+      steps: [
+        { code: 'repeat 2: forward\nturn right\nrepeat 2: forward', line: 2, html: maze(2, 4, 'run ▶', { face: '😵', hit: [2, 4] }), say: "Запускаем — робот врезался в стену! ¦ Ishga tushiramiz — robot devorga urildi! ¦ Run it — the robot crashes into a wall!" },
+        { code: 'repeat 2: forward   ✓\nturn right          ?\nrepeat 2: forward', line: 1, html: maze(2, 4, 'step 1 ✓'), say: "Идём по шагам: первые два «вперёд» — верно, робот у поворота. ¦ Qadam-baqadam boramiz: birinchi ikkita «oldinga» — to'g'ri, robot burilishda. ¦ Step through: the first two “forward” blocks are right." },
+        { code: 'repeat 2: forward   ✓\nturn right          ✗\nrepeat 2: forward', line: 2, html: maze(2, 4, 'step 2 ✗', { face: '🤔' }), say: "Шаг 2: путь идёт вверх, а мы повернули направо. Вот баг! ¦ 2-qadam: yo'l yuqoriga ketadi, biz esa o'ngga burildik. Mana xato! ¦ Step 2: the path goes up but we turned right. There's the bug!" },
+        { code: 'repeat 2: forward\nturn left\nrepeat 2: forward', line: 2, html: maze(2, 2, 'fixed ✓'), say: "Меняем одно — right на left — и запускаем снова. Робот на месте! ¦ Bittasini o'zgartiramiz — right'ni left'ga — va yana ishga tushiramiz. Robot joyida! ¦ Change one thing — right to left — and run again. It works!" },
       ],
-      takeaway: "Проходите программу по строкам и сравнивайте с тем, что видите на поле. ¦ Dasturni qatorma-qator o'ting va maydonda ko'rganingiz bilan solishtiring. ¦ Step through the program line by line and compare with the board.",
-      notes: { say: ["В Blockly включите медленную скорость выполнения — так видно каждый шаг."], min: 5 },
+      takeaway: "Запустить → найти шаг → понять причину → исправить одно → проверить. ¦ Ishga tushirish → qadamni topish → sababni tushunish → bittasini tuzatish → tekshirish. ¦ Run → find the step → understand why → fix one thing → re-run.",
+      notes: { say: ["Частая ошибка — менять блоки наугад, не понимая причину."], min: 5 },
     },
     {
-      type: 'bugs',
+      type: 'show',
       stage: 2,
-      title: "Найдите баг в Repeat ¦ Repeat'dagi xatoni toping ¦ Find the bug in Repeat",
-      chat: "номер строки с багом ¦ xatoli qator raqami ¦ the line number with the bug",
-      snippets: [
-        { title: "Квадрат не замкнулся ¦ Kvadrat yopilmadi ¦ The square isn't closed", lang: 'js', code: `for (let side = 1; side <= 3; side++) {\n  forward(100);\n  turnRight(90);\n}`, line: 1, explain: "У квадрата 4 стороны, а цикл повторяется 3 раза. ¦ Kvadratning 4 tomoni bor, tsikl esa 3 marta takrorlanadi. ¦ A square has 4 sides, but the loop runs 3 times.", fix: `for (let side = 1; side <= 4; side++) {` },
-        { title: "Лишний поворот внутри ¦ Ichkarida ortiqcha burilish ¦ An extra turn inside", lang: 'js', code: `for (let i = 1; i <= 5; i++) {\n  forward(1);\n  turnRight();\n}`, line: 3, explain: "Робот должен пройти 5 клеток прямо, но поворачивает на каждом шаге и крутится на месте. Поворот нужно вынести из цикла. ¦ Robot 5 katak to'g'ri yurishi kerak, lekin har qadamda buriladi va joyida aylanadi. Burilishni tsikldan chiqarish kerak. ¦ The robot should walk 5 cells straight but turns every step and spins. Move the turn out of the loop.", fix: `for (let i = 1; i <= 5; i++) {\n  forward(1);\n}\nturnRight();` },
+      title: "Условие: робот решает сам ¦ Shart: robot o'zi hal qiladi ¦ A condition: the robot decides",
+      chat: "что делать роботу, если впереди стена? ¦ oldinda devor bo'lsa, robot nima qilishi kerak? ¦ what should the robot do if there's a wall ahead?",
+      lang: 'text',
+      css: CSS,
+      steps: [
+        { code: 'repeat until 🏁:\n  if path ahead:\n    forward\n  else:\n    turn', line: 1, html: maze(0, 4, 'if / else'), say: "Вместо точного списка — правило: «если впереди путь — иди, иначе — поворачивай». ¦ Aniq ro'yxat o'rniga — qoida: «oldinda yo'l bo'lsa — yur, aks holda — buril». ¦ Instead of an exact list, a rule: “if there's a path ahead, go; else turn”." },
+        { code: 'repeat until 🏁:\n  if path ahead:\n    forward\n  else:\n    turn', line: 3, html: maze(2, 4, 'path → forward'), say: "Путь есть — идёт вперёд. ¦ Yo'l bor — oldinga yuradi. ¦ Path ahead — move forward." },
+        { code: 'repeat until 🏁:\n  if path ahead:\n    forward\n  else:\n    turn', line: 5, html: maze(2, 2, 'wall → turn'), say: "Стена — поворачивает и снова проверяет. ¦ Devor — buriladi va yana tekshiradi. ¦ A wall — it turns and checks again." },
+        { code: 'repeat until 🏁:\n  if path ahead:\n    forward\n  else:\n    turn', line: 1, html: maze(4, 0, '🏁 ✓', { face: '🥳' }), say: "Так робот проходит даже лабиринт, который видит впервые! ¦ Shunday qilib robot birinchi marta ko'rgan labirintdan ham o'tadi! ¦ This way the robot solves even a maze it has never seen!" },
       ],
-      takeaway: "Два частых бага с повтором: неверное число раз и лишний блок внутри. ¦ Takror bilan bog'liq ikki keng tarqalgan xato: noto'g'ri takrorlash soni va ichkaridagi ortiqcha blok. ¦ Two classic repeat bugs: the wrong count and an extra block inside.",
-      notes: { say: ["forward/turnRight — условные команды робота (как блоки), не встроенный JS."], min: 5 },
+      takeaway: "if / else — программа выбирает действие по ситуации. ¦ if / else — dastur vaziyatga qarab harakatni tanlaydi. ¦ if / else lets a program choose based on the situation.",
+      notes: { say: ["Упрощение: в настоящей Blockly-игре направление поворота задаёте сами (налево/направо)."], min: 5 },
     },
     {
       type: 'compare',
-      stage: 3,
-      title: "Программа, которая думает ¦ O'ylaydigan dastur ¦ A program that thinks",
-      chat: "какая программа пройдёт любой лабиринт? ¦ qaysi dastur istalgan labirintdan o'tadi? ¦ which program can solve any maze?",
-      left: { icon: '📜', label: "Жёсткий маршрут ¦ Qat'iy marshrut ¦ A fixed route", code: BUGGY, lang: 'text' },
-      right: { icon: '🧠', label: "С условием ¦ Shart bilan ¦ With a condition", code: IF_ELSE, lang: 'text' },
-      verdict: "Слева программа работает только для одного лабиринта. Справа робот смотрит, есть ли путь, и сам решает, что делать. ¦ Chapdagi dastur faqat bitta labirint uchun ishlaydi. O'ngda robot yo'l bormi-yo'qmi qaraydi va o'zi qaror qiladi. ¦ The left one works for a single maze. On the right the robot checks for a path and decides itself.",
-      notes: { say: ["→ — правая колонка. В Blockly: «повторять до» + «если — иначе»."], min: 4 },
+      stage: 2,
+      title: "Список или правило? ¦ Ro'yxatmi yoki qoidami? ¦ A list or a rule?",
+      chat: "какая программа справится с новым лабиринтом? ¦ qaysi dastur yangi labirint bilan uddalaydi? ¦ which program handles a new maze?",
+      left: { icon: '📜', label: "Точный список ¦ Aniq ro'yxat ¦ An exact list", code: 'forward\nforward\nturn left\nforward\n…', lang: 'text', points: ["Работает только для одного лабиринта ¦ Faqat bitta labirint uchun ishlaydi ¦ Works for one maze only"] },
+      right: { icon: '🧠', label: "Правило ¦ Qoida ¦ A rule", code: 'repeat until 🏁:\n  if path ahead: forward\n  else: turn', lang: 'text', points: ["Подходит для многих лабиринтов ¦ Ko'p labirintlarga mos ¦ Fits many mazes"] },
+      verdict: "Повтор + условие = программа, которая думает. ¦ Takror + shart = o'ylaydigan dastur. ¦ Repeat + condition = a program that thinks.",
+      notes: { min: 3 },
     },
     {
-      type: 'live',
+      type: 'truefalse',
       stage: 3,
-      console: true,
-      title: "if-else на JavaScript ¦ JavaScript'da if-else ¦ if-else in JavaScript",
-      chat: "что поменять в карте, чтобы робот повернул 2 раза? ¦ robot 2 marta burilishi uchun xaritada nimani o'zgartirish kerak? ¦ what map change makes the robot turn twice?",
-      task: "✍️ Меняйте массив path: 1 — дорога, 0 — стена ¦ ✍️ path massivini o'zgartiring: 1 — yo'l, 0 — devor ¦ ✍️ Edit the path array: 1 is road, 0 is wall",
-      steps: [
-        { label: "if-else ¦ if-else ¦ if-else", js: `const path = [1, 1, 0, 1, 1];\n\nfor (let i = 0; i < path.length; i++) {\n  if (path[i] === 1) {\n    console.log(i + ': 🤖 move forward');\n  } else {\n    console.log(i + ': ↪️ wall! turn right');\n  }\n}` },
-        { label: "+ цель ¦ + maqsad ¦ + goal", js: `const path = [1, 1, 0, 1, 2];\n\nfor (let i = 0; i < path.length; i++) {\n  if (path[i] === 2) {\n    console.log(i + ': ⭐ goal reached!');\n  } else if (path[i] === 1) {\n    console.log(i + ': 🤖 move forward');\n  } else {\n    console.log(i + ': ↪️ wall! turn right');\n  }\n}` },
+      title: "Правда или миф? ¦ Rostmi yoki afsona? ¦ True or myth?",
+      chat: "пишите «правда» или «миф» ¦ «rost» yoki «afsona» deb yozing ¦ write “true” or “myth”",
+      statements: [
+        { text: "Баг значит, что компьютер сломался ¦ Bag kompyuter buzilganini anglatadi ¦ A bug means the computer is broken", truth: false, explain: "Он сделал ровно то, что написано. ¦ U aynan yozilganini qildi. ¦ It did exactly what was written." },
+        { text: "Лучше менять по одной вещи за раз ¦ Bir martada bitta narsani o'zgartirgan ma'qul ¦ Change one thing at a time", truth: true, explain: "Так понятно, что помогло. ¦ Shunda nima yordam bergani tushunarli. ¦ Then you know what helped." },
+        { text: "if нужен, чтобы повторять ¦ if takrorlash uchun kerak ¦ if is for repeating", truth: false, explain: "if выбирает, repeat повторяет. ¦ if tanlaydi, repeat takrorlaydi. ¦ if chooses; repeat repeats." },
       ],
-      takeaway: "Блок «если — иначе» в Blockly = if / else в JavaScript. Repeat + условие = программа, которая сама принимает решения. ¦ Blockly'dagi «agar — aks holda» bloki = JavaScript'dagi if / else. Repeat + shart = o'zi qaror qabul qiladigan dastur. ¦ Blockly's “if — else” = JavaScript's if / else. Repeat + a condition = a program that decides for itself.",
-      notes: { say: ["Попросите чат придумать карту: 1/0/2, и запустите."], min: 6 },
-    },
-    {
-      type: 'output',
-      stage: 3,
-      title: "Что решит программа? ¦ Dastur nimani hal qiladi? ¦ What will the program decide?",
-      chat: "пишите ответ до того, как я покажу ¦ men ko'rsatishimdan oldin javob yozing ¦ write your answer before I reveal it",
-      snippets: [
-        { label: "Погода ¦ Ob-havo ¦ Weather", code: `const rain = true;\nif (rain) {\n  console.log('☂️ take an umbrella');\n} else {\n  console.log('😎 sunglasses');\n}`, output: ['☂️ take an umbrella'], explain: "rain = true — выполняется первая ветка. ¦ rain = true — birinchi tarmoq bajariladi. ¦ rain is true, so the first branch runs." },
-        { label: "Повтор + условие ¦ Takror + shart ¦ Repeat + condition", code: `for (let i = 1; i <= 4; i++) {\n  if (i % 2 === 0) {\n    console.log(i + ' even');\n  } else {\n    console.log(i + ' odd');\n  }\n}`, output: ['1 odd', '2 even', '3 odd', '4 even'], explain: "Условие проверяется на каждом проходе цикла. ¦ Shart tsiklning har bir o'tishida tekshiriladi. ¦ The condition is checked on every pass." },
-      ],
-      takeaway: "Условие внутри повтора проверяется каждый раз заново. ¦ Takror ichidagi shart har safar qaytadan tekshiriladi. ¦ A condition inside a repeat is checked each time.",
-      notes: { say: ["Сначала ответы чата, потом раскрываем."], min: 4 },
-    },
-    {
-      type: 'sort',
-      stage: 3,
-      title: "Repeat или if-else? ¦ Repeat'mi yoki if-else? ¦ Repeat or if-else?",
-      chat: "пишите: «1 — repeat» ¦ yozing: «1 — repeat» ¦ write: “1 — repeat”",
-      zones: [
-        { id: 'repeat', label: "Repeat ¦ Repeat ¦ Repeat", icon: '🔁' },
-        { id: 'if', label: "if-else ¦ if-else ¦ if-else", icon: '🔀' },
-      ],
-      items: [
-        { text: "Пройти 10 клеток вперёд ¦ 10 katak oldinga yurish ¦ Walk 10 cells forward", zone: 'repeat' },
-        { text: "Если стена — повернуть ¦ Devor bo'lsa — burilish ¦ If there's a wall, turn", zone: 'if' },
-        { text: "Нарисовать 6 звёзд ¦ 6 ta yulduz chizish ¦ Draw 6 stars", zone: 'repeat' },
-        { text: "Если пароль верный — войти, иначе — ошибка ¦ Parol to'g'ri bo'lsa — kirish, aks holda — xato ¦ If the password is right, log in; else show an error", zone: 'if' },
-      ],
-      takeaway: "Repeat — когда делаем одно и то же много раз. if-else — когда выбираем между вариантами. ¦ Repeat — bir xil ishni ko'p marta qilganda. if-else — variantlar orasidan tanlaganda. ¦ Repeat when doing the same thing many times; if-else when choosing between options.",
-      notes: { say: ["Раскладка → «Проверить»."], min: 3 },
+      notes: { min: 3 },
     },
     {
       type: 'mission',
       stage: 4,
-      title: "Миссия: робот-исследователь ¦ Missiya: tadqiqotchi robot ¦ Mission: the explorer robot",
+      title: "Миссия: отладчик ¦ Missiya: tuzatuvchi ¦ Mission: debugger",
       chat: "номера ответов в чат ¦ javob raqamlarini chatga ¦ answer numbers in the chat",
-      goal: "Робот прошёл неизвестный лабиринт! ¦ Robot noma'lum labirintdan o'tdi! ¦ The robot solved an unknown maze!",
+      goal: "Робот дошёл до флажка! ¦ Robot bayroqchaga yetdi! ¦ The robot reached the flag!",
       items: [
-        { title: "Робот врезался. Первый шаг: ¦ Robot urildi. Birinchi qadam: ¦ The robot crashed. First step:", choices: ["Найти, на каком блоке ¦ Qaysi blokda ekanini topish ¦ Find which block", "Удалить всю программу ¦ Butun dasturni o'chirish ¦ Delete the whole program"], correct: 0, explain: "Сначала место, потом причина. ¦ Avval joy, keyin sabab. ¦ Location first, then cause." },
-        { title: "Квадрат не замкнулся ¦ Kvadrat yopilmadi ¦ The square isn't closed", choices: ["Повторить 4, а не 3 ¦ 3 emas, 4 marta takrorlash ¦ Repeat 4, not 3", "Добавить ещё одну стену ¦ Yana bitta devor qo'shish ¦ Add another wall"], correct: 0, explain: "4 стороны — 4 повтора. ¦ 4 tomon — 4 takror. ¦ 4 sides, 4 repeats." },
-        { title: "Лабиринт каждый раз разный ¦ Labirint har safar har xil ¦ The maze changes every time", choices: ["Жёсткий маршрут ¦ Qat'iy marshrut ¦ A fixed route", "Repeat + if-else ¦ Repeat + if-else ¦ Repeat + if-else"], correct: 1, explain: "Программа смотрит и решает. ¦ Dastur qaraydi va qaror qiladi. ¦ The program looks and decides." },
+        { title: "Робот врезался. Первый шаг? ¦ Robot urildi. Birinchi qadam? ¦ The robot crashed. First step?", choices: ["Найти, на каком шаге ¦ Qaysi qadamda ekanini topish ¦ Find which step", "Переписать всё ¦ Hammasini qayta yozish ¦ Rewrite everything"], correct: 0, explain: "Сначала найти место. ¦ Avval joyni topish. ¦ Find the spot first." },
+        { title: "«если стена — поверни» — это… ¦ «devor bo'lsa — buril» — bu… ¦ “if wall, turn” is…", choices: ["Условие ¦ Shart ¦ A condition", "Повтор ¦ Takror ¦ A repeat"], correct: 0, explain: "if / else. ¦ if / else. ¦ if / else." },
+        { title: "Нашли причину ¦ Sababni topdik ¦ You found the cause", choices: ["Исправить одно и запустить ¦ Bittasini tuzatib, ishga tushirish ¦ Fix one thing and run", "Поменять 5 блоков сразу ¦ Birdan 5 ta blokni o'zgartirish ¦ Change 5 blocks at once"], correct: 0, explain: "Одно изменение — одна проверка. ¦ Bitta o'zgarish — bitta tekshiruv. ¦ One change, one test." },
       ],
-      notes: { say: ["Ответы чата → «Проверить»."], min: 3 },
+      notes: { min: 3 },
     },
     {
       type: 'finale',
       stage: 4,
-      title: "Итог: отладка и условия ¦ Xulosa: debugging va shartlar ¦ Summary: debugging and conditions",
-      chat: "какой самый смешной баг у вас был? ¦ sizda eng kulgili bug qanday bo'lgan? ¦ what's the funniest bug you've had?",
-      answer: "Отладка — это 4 шага: запустить, найти место, понять причину, исправить и проверить снова, меняя по одной вещи. Repeat повторяет блоки нужное число раз — частые баги в нём: не то число и лишний блок внутри. if-else позволяет программе выбирать, а Repeat + условие делает робота, который сам проходит любой лабиринт. ¦ Debugging — 4 qadam: ishga tushirish, joyni topish, sababni tushunish, tuzatish va bittadan o'zgartirib qayta tekshirish. Repeat bloklarni kerakli marta takrorlaydi — undagi keng tarqalgan xatolar: noto'g'ri son va ichkaridagi ortiqcha blok. if-else dasturga tanlash imkonini beradi, Repeat + shart esa istalgan labirintdan o'zi o'tadigan robotni yaratadi. ¦ Debugging is 4 steps: run, locate, understand, fix and re-test, one change at a time. Repeat runs blocks a set number of times; its classic bugs are the wrong count and an extra block inside. if-else lets a program choose, and Repeat + a condition makes a robot that solves any maze on its own.",
+      title: "Итог: отладка и условия ¦ Xulosa: tuzatish va shartlar ¦ Summary: debugging and conditions",
+      chat: "какой самый смешной баг у вас был? ¦ sizda eng kulgili xato qanday bo'lgan? ¦ what's the funniest bug you've had?",
+      answer: "Баг — ошибка в наших шагах, а не в компьютере. Отладка идёт по шагам: запустить, найти место, понять причину, исправить одну вещь и снова проверить. Условие if / else позволяет программе выбирать действие по ситуации, а вместе с повтором получается правило, которое справляется даже с новым лабиринтом. ¦ Bag — kompyuterda emas, bizning qadamlarimizdagi xato. Tuzatish qadam-baqadam boradi: ishga tushirish, joyni topish, sababni tushunish, bitta narsani tuzatish va yana tekshirish. if / else sharti dasturga vaziyatga qarab harakat tanlash imkonini beradi, takror bilan birga esa hatto yangi labirint bilan ham uddalaydigan qoida hosil bo'ladi. ¦ A bug is a mistake in our steps, not in the computer. Debugging goes step by step: run, find the spot, understand why, fix one thing and re-test. if / else lets a program choose by situation, and together with repeat you get a rule that solves even a new maze.",
       icon: '🐞',
-      badge: "Охотник за багами ¦ Bug ovchisi ¦ Bug hunter",
+      badge: "Охотник на баги ¦ Xato ovchisi ¦ Bug hunter",
       badgeSub: "Tilda · Git · техническая 7 ¦ Tilda · Git · texnik 7 ¦ Tilda · Git · technical 7",
       homeworkTitle: "Дома ¦ Uyda ¦ At home",
       homework: [
-        "Пройдите в Blockly-лабиринте уровни с «если — иначе» и «повторять до». ¦ Blockly labirintida «agar — aks holda» va «...guncha takrorla» darajalarini o'ting. ¦ Beat the Blockly maze levels with “if — else” and “repeat until”.",
-        "Сделайте в программе специальный баг, дайте другу найти его и запишите, сколько времени ушло. ¦ Dasturda ataylab xato qiling, do'stingizga topishni bering va qancha vaqt ketganini yozib qo'ying. ¦ Plant a bug in a program, have a friend find it, and note how long it took.",
+        "Пройдите уровни Blockly Maze с блоком if. ¦ Blockly Maze'ning if bloki bor bosqichlarini o'ting. ¦ Beat the Blockly Maze levels with the if block.",
+        "Найдите и исправьте баг в любой своей программе по 4 шагам. ¦ O'z dasturingizdagi xatoni 4 qadam bo'yicha toping va tuzating. ¦ Find and fix a bug in one of your programs using the 4 steps.",
       ],
-      takeaway: "Модуль Tilda и Git пройден! Дальше — JavaScript: оживляем сайты. ¦ Tilda va Git moduli tugadi! Keyingisi — JavaScript: saytlarni jonlantiramiz. ¦ The Tilda and Git module is done! Next: JavaScript — bringing sites to life.",
-      notes: { say: ["Итог модуля."], min: 2 },
+      takeaway: "Технические темы пройдены! Дальше — общие темы. ¦ Texnik mavzular tugadi! Keyingisi — umumiy mavzular. ¦ Technical topics done! Next: general topics.",
+      notes: { min: 2 },
     },
   ],
 });

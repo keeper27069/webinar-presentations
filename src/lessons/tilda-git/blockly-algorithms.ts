@@ -1,181 +1,120 @@
 import { kit } from '@engine/kit';
 
-/** Code where each line is "ru ¦ uz ¦ en" → one whole block per language */
-const blk = (s: string) =>
-  [0, 1, 2]
-    .map((i) =>
-      s
-        .split('\n')
-        .map((line) => {
-          const p = line.split('¦');
-          return p.length < 3 ? line : (line.match(/^\s*/)?.[0] ?? '') + (p[i] ?? '').trim();
-        })
-        .join('\n'),
-    )
-    .join('\n¦\n');
-
-const LONG = blk(`шаг вперёд ¦ oldinga qadam ¦ move forward
-шаг вперёд ¦ oldinga qadam ¦ move forward
-шаг вперёд ¦ oldinga qadam ¦ move forward
-шаг вперёд ¦ oldinga qadam ¦ move forward
-повернуть направо ¦ oʻngga burilish ¦ turn right
-шаг вперёд ¦ oldinga qadam ¦ move forward
-шаг вперёд ¦ oldinga qadam ¦ move forward
-шаг вперёд ¦ oldinga qadam ¦ move forward
-шаг вперёд ¦ oldinga qadam ¦ move forward`);
+const CSS = `.wrap{display:grid;place-items:center;height:100%;font-family:Manrope,system-ui}
+.maze{position:relative;display:grid;grid-template-columns:repeat(5,70px);grid-template-rows:repeat(5,70px);gap:6px;padding:12px;border-radius:20px;background:#fff;box-shadow:0 10px 30px #0001}
+.c{border-radius:12px;background:#eceef3}.c.p{background:#ccf3ee}.c.w{background:#3a3f52}
+.bot{position:absolute;width:70px;height:70px;display:grid;place-items:center;font-size:48px}
+.goal{position:absolute;width:70px;height:70px;display:grid;place-items:center;font-size:44px}
+.cnt{position:absolute;right:-12px;top:-14px;padding:4px 12px;border-radius:999px;background:#0fb5a6;color:#fff;font:800 16px JetBrains Mono,monospace}`;
+// path: from (0,4) up to (0,0)? keep simple: start bottom-left, go right 4, then up 4
+const PATH = new Set(['0,4', '1,4', '2,4', '3,4', '4,4', '4,3', '4,2', '4,1', '4,0']);
+const at = (x: number, y: number) => `left:${12 + x * 76}px;top:${12 + y * 76}px`;
+const maze = (x: number, y: number, lines: number, face = '🤖') => {
+  let cells = '';
+  for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) cells += `<div class="c ${PATH.has(`${c},${r}`) ? 'p' : (c + r) % 3 === 0 ? 'w' : ''}"></div>`;
+  return `<div class="wrap"><div class="maze">${cells}<div class="goal" style="${at(4, 0)}">🏁</div><div class="bot" style="${at(x, y)}">${face}</div><span class="cnt">${lines} blocks</span></div></div>`;
+};
 
 export default kit({
   id: 'tilda-git-t03',
   title: "Алгоритмы и оптимизация (Blockly) ¦ Algoritmlar va optimallashtirish (Blockly) ¦ Algorithms and optimisation (Blockly)",
-  question: "Как одну и ту же задачу решить короче и проще? ¦ Bitta vazifani qanday qilib qisqaroq va soddaroq hal qilish mumkin? ¦ How do you solve the same task in a shorter, simpler way?",
-  route: ["Что такое алгоритм ¦ Algoritm nima ¦ What an algorithm is", "Длинная программа ¦ Uzun dastur ¦ A long program", "Повтор ¦ Takrorlash ¦ Repeat", "Оптимизация ¦ Optimallashtirish ¦ Optimisation", "Финал ¦ Yakun ¦ Finale"],
+  question: "Как одну и ту же задачу решить короче и проще? ¦ Bitta vazifani qanday qilib qisqaroq va osonroq hal qilish mumkin? ¦ How do you solve the same task shorter and simpler?",
+  route: ["Алгоритм ¦ Algoritm ¦ Algorithm", "Длинно ¦ Uzun ¦ The long way", "Повтор ¦ Takror ¦ Repeat", "Проверка ¦ Tekshiruv ¦ Check", "Финал ¦ Yakun ¦ Finale"],
   scenes: [
     {
       type: 'intro',
       stage: 0,
       icon: '🤖',
       kicker: "Tilda · Git · техническая тема 3 ¦ Tilda · Git · texnik mavzu 3 ¦ Tilda · Git · technical topic 3",
-      title: "Робот, который понимает только команды ¦ Faqat buyruqlarni tushunadigan robot ¦ A robot that only understands commands",
+      title: "Робот понимает только команды ¦ Robot faqat buyruqlarni tushunadi ¦ The robot only understands commands",
       chat: "как объяснить роботу дорогу до двери? ¦ robotga eshikkacha yo'lni qanday tushuntirish mumkin? ¦ how would you explain the way to the door to a robot?",
-      lead: "Компьютер не догадывается — он выполняет команды по порядку. Набор таких команд для решения задачи и есть алгоритм. ¦ Kompyuter taxmin qilmaydi — u buyruqlarni tartib bilan bajaradi. Vazifani hal qilish uchun shunday buyruqlar to'plami — algoritmdir. ¦ A computer doesn't guess; it runs commands in order. A set of commands that solves a task is an algorithm.",
-      facts: [
-        "Чёткие шаги ¦ Aniq qadamlar ¦ Clear steps",
-        "Строгий порядок ¦ Qat'iy tartib ¦ A strict order",
-        "Понятный результат ¦ Tushunarli natija ¦ A clear result",
-      ],
-      takeaway: "Сегодня научимся писать алгоритмы в блоках и делать их короче. ¦ Bugun bloklarda algoritm yozishni va ularni qisqartirishni o'rganamiz. ¦ Today we'll write algorithms in blocks and make them shorter.",
-      notes: { say: ["Блоки здесь показаны текстом. Для живой сборки откройте Blockly-игру (например, Blockly Games «Maze») — заметки скажут, когда."], min: 3 },
+      lead: "Компьютер не догадывается — он выполняет команды по порядку. Набор таких команд для решения задачи и есть алгоритм. ¦ Kompyuter taxmin qilmaydi — u buyruqlarni tartib bilan bajaradi. Vazifani hal qilish uchun shunday buyruqlar to'plami — algoritm. ¦ Computers don't guess — they run commands in order. A set of commands that solves a task is an algorithm.",
+      facts: ["Чёткие шаги ¦ Aniq qadamlar ¦ Clear steps", "Строгий порядок ¦ Qat'iy tartib ¦ A strict order", "Понятный результат ¦ Tushunarli natija ¦ A clear result"],
+      takeaway: "Ведём робота к флажку — сначала длинно. ¦ Robotni bayroqchaga olib boramiz — avval uzun yo'l bilan. ¦ Let's guide the robot to the flag — the long way first.",
+      notes: { say: ["Для живой сборки откройте Blockly Games «Maze»."], min: 3 },
     },
     {
-      type: 'flow',
-      stage: 0,
-      title: "Алгоритм из жизни: утро ¦ Hayotdan algoritm: tong ¦ A real-life algorithm: the morning",
-      chat: "какой шаг поставили бы первым? ¦ birinchi qaysi qadamni qo'yardingiz? ¦ which step would you put first?",
-      nodes: [
-        { icon: '⏰', label: "Будильник ¦ Budilnik ¦ Alarm", text: "Проснуться в 7:00. ¦ Soat 7:00 da uyg'onish. ¦ Wake up at 7:00." },
-        { icon: '🪥', label: "Умыться ¦ Yuvinish ¦ Wash up", text: "Зубы, лицо. ¦ Tish, yuz. ¦ Teeth, face." },
-        { icon: '🍳', label: "Завтрак ¦ Nonushta ¦ Breakfast", text: "Если есть время — яичница, иначе — бутерброд. ¦ Vaqt bo'lsa — quymoq, aks holda — buterbrod. ¦ If there's time, eggs; otherwise a sandwich." },
-        { icon: '🎒', label: "Рюкзак ¦ Ryukzak ¦ Backpack", text: "Проверить: тетради, ручка, телефон. ¦ Tekshirish: daftarlar, ruchka, telefon. ¦ Check: notebooks, pen, phone." },
-        { icon: '🚪', label: "Выйти ¦ Chiqish ¦ Leave", text: "Закрыть дверь. Готово! ¦ Eshikni yopish. Tayyor! ¦ Lock the door. Done!" },
-      ],
-      takeaway: "Даже в утреннем алгоритме есть условие («если есть время») и повтор (проверить три вещи). ¦ Tonggi algoritmda ham shart («vaqt bo'lsa») va takrorlash (uch narsani tekshirish) bor. ¦ Even the morning has a condition (“if there's time”) and a repeat (check three things).",
-      notes: { say: ["Спросите чат: что сломается, если поменять шаги местами?"], min: 3 },
-    },
-    {
-      type: 'walk',
+      type: 'show',
       stage: 1,
-      title: "Ведём робота к звезде ¦ Robotni yulduzgacha olib boramiz ¦ Guiding the robot to the star",
-      chat: "сколько блоков в этой программе? ¦ bu dasturda nechta blok bor? ¦ how many blocks are in this program?",
-      code: LONG,
+      title: "Длинная программа ¦ Uzun dastur ¦ The long program",
+      chat: "сколько блоков понадобится? угадайте! ¦ nechta blok kerak bo'ladi? taxmin qiling! ¦ how many blocks will it take? guess!",
       lang: 'text',
-      marks: [
-        { line: 1, text: "Четыре одинаковых блока подряд — робот идёт 4 клетки вперёд. ¦ Ketma-ket to'rtta bir xil blok — robot 4 katak oldinga yuradi. ¦ Four identical blocks in a row: the robot walks 4 cells." },
-        { line: 5, text: "Поворот. ¦ Burilish. ¦ A turn." },
-        { line: 6, text: "И снова четыре одинаковых блока. Всего 9 блоков. ¦ Va yana to'rtta bir xil blok. Jami 9 ta blok. ¦ And four identical blocks again. 9 blocks in total." },
+      css: CSS,
+      steps: [
+        { code: '(start)', html: maze(0, 4, 0), say: "Робот внизу слева, флажок — справа вверху. ¦ Robot pastda chapda, bayroqcha — yuqorida o'ngda. ¦ The robot is bottom-left; the flag is top-right." },
+        { code: 'move forward\nmove forward', line: 2, html: maze(2, 4, 2), say: "Два «вперёд» — робот прошёл две клетки. ¦ Ikkita «oldinga» — robot ikki katak yurdi. ¦ Two “forward” blocks: two squares." },
+        { code: 'move forward\nmove forward\nmove forward\nmove forward', line: 4, html: maze(4, 4, 4), say: "Ещё два — дошли до угла. ¦ Yana ikkita — burchakka yetdik. ¦ Two more and we reach the corner." },
+        { code: 'move forward ×4\nturn left\nmove forward\nmove forward\nmove forward\nmove forward', line: 6, html: maze(4, 0, 9, '🥳'), say: "Поворот и ещё 4 шага — флажок! Но вышло 9 блоков. ¦ Burilish va yana 4 qadam — bayroqcha! Lekin 9 ta blok chiqdi. ¦ A turn and 4 more steps — the flag! But that's 9 blocks." },
       ],
-      takeaway: "Программа работает, но она длинная и однообразная. Если путь будет 100 клеток — 100 блоков? ¦ Dastur ishlaydi, lekin u uzun va bir xil. Yo'l 100 katak bo'lsa — 100 ta blokmi? ¦ It works, but it's long and repetitive. A 100-cell path — 100 blocks?",
-      notes: { say: ["Соберите эту программу в Blockly-лабиринте, если удобно."], switch: "Blockly ¦ Blockly ¦ Blockly", min: 4 },
+      takeaway: "Работает, но длинно: одно и то же много раз. ¦ Ishlaydi, lekin uzun: bir xil narsa ko'p marta. ¦ It works but it's long: the same thing over and over.",
+      notes: { min: 5 },
+    },
+    {
+      type: 'show',
+      stage: 2,
+      title: "Блок «повторить» ¦ «Takrorla» bloki ¦ The “repeat” block",
+      chat: "как сократить программу? ¦ dasturni qanday qisqartirish mumkin? ¦ how can we shorten it?",
+      lang: 'text',
+      css: CSS,
+      steps: [
+        { code: 'repeat 4 times:\n  move forward', line: 1, html: maze(4, 4, 2), say: "«Повтори 4 раза: вперёд» — 2 блока вместо 4. ¦ «4 marta takrorla: oldinga» — 4 ta o'rniga 2 ta blok. ¦ “Repeat 4 times: forward” — 2 blocks instead of 4." },
+        { code: 'repeat 4 times:\n  move forward\nturn left', line: 3, html: maze(4, 4, 3), say: "Поворачиваем налево. ¦ Chapga buramiz. ¦ Turn left." },
+        { code: 'repeat 4 times:\n  move forward\nturn left\nrepeat 4 times:\n  move forward', line: 4, html: maze(4, 0, 5, '🥳'), say: "Ещё один повтор — флажок! Всего 5 блоков вместо 9. ¦ Yana bitta takror — bayroqcha! 9 ta o'rniga jami 5 ta blok. ¦ One more repeat — the flag! 5 blocks instead of 9." },
+      ],
+      takeaway: "Повтор делает программу короче и понятнее. Это оптимизация. ¦ Takror dasturni qisqaroq va tushunarliroq qiladi. Bu optimallashtirish. ¦ Repeat makes programs shorter and clearer — that's optimisation.",
+      notes: { min: 5 },
     },
     {
       type: 'compare',
       stage: 2,
-      title: "Блок «повторить» ¦ «Takrorlash» bloki ¦ The “repeat” block",
-      chat: "сколько блоков стало справа? ¦ o'ngda nechta blok qoldi? ¦ how many blocks are on the right now?",
-      left: { icon: '🐢', label: "9 блоков ¦ 9 ta blok ¦ 9 blocks", code: LONG, lang: 'text' },
-      right: { icon: '⚡', label: "4 блока ¦ 4 ta blok ¦ 4 blocks", code: blk(`повторить 4 раза: ¦ 4 marta takrorla: ¦ repeat 4 times:\n  шаг вперёд ¦ oldinga qadam ¦ move forward\nповернуть направо ¦ oʻngga burilish ¦ turn right\nповторить 4 раза: ¦ 4 marta takrorla: ¦ repeat 4 times:\n  шаг вперёд ¦ oldinga qadam ¦ move forward`), lang: 'text' },
-      verdict: "Результат одинаковый, но справа программа короче, и путь в 100 клеток — это просто «повторить 100 раз». ¦ Natija bir xil, lekin o'ngdagi dastur qisqaroq, 100 katakli yo'l esa shunchaki «100 marta takrorla». ¦ Same result, but the right one is shorter, and a 100-cell path is just “repeat 100 times”.",
-      notes: { say: ["→ — правая колонка. В Blockly это блок «повторить» с вложенными блоками внутри."], min: 4 },
+      title: "9 блоков или 5? ¦ 9 ta blokmi yoki 5 tami? ¦ 9 blocks or 5?",
+      chat: "какую программу легче исправить? ¦ qaysi dasturni tuzatish osonroq? ¦ which program is easier to fix?",
+      left: { icon: '📜', label: "Длинно ¦ Uzun ¦ Long", code: 'move forward\nmove forward\nmove forward\nmove forward\nturn left\nmove forward\nmove forward\nmove forward\nmove forward', lang: 'text' },
+      right: { icon: '✨', label: "Коротко ¦ Qisqa ¦ Short", code: 'repeat 4 times:\n  move forward\nturn left\nrepeat 4 times:\n  move forward', lang: 'text' },
+      verdict: "Если клеток станет 10 — в короткой программе меняем одно число. ¦ Kataklar 10 ta bo'lsa — qisqa dasturda bitta raqamni o'zgartiramiz. ¦ If there are 10 squares, the short program changes just one number.",
+      notes: { min: 3 },
     },
     {
-      type: 'live',
-      stage: 2,
-      console: true,
-      title: "То же самое на JavaScript ¦ Xuddi shu JavaScript'da ¦ The same in JavaScript",
-      chat: "сколько раз повторить? пишите число ¦ necha marta takrorlaymiz? raqam yozing ¦ how many times? write a number",
-      task: "✍️ Блоки — это настоящий код. Поменяйте число в цикле ¦ ✍️ Bloklar — haqiqiy kod. Tsikldagi raqamni o'zgartiring ¦ ✍️ Blocks are real code. Change the loop's number",
-      steps: [
-        { label: "Без повтора ¦ Takrorsiz ¦ No repeat", js: `console.log('🤖 step');\nconsole.log('🤖 step');\nconsole.log('🤖 step');\nconsole.log('🤖 step');\nconsole.log('↪️ turn right');` },
-        { label: "С повтором ¦ Takror bilan ¦ With repeat", js: `for (let i = 1; i <= 4; i++) {\n  console.log('🤖 step ' + i);\n}\nconsole.log('↪️ turn right');` },
-        { label: "Функция ¦ Funksiya ¦ A function", js: `function walk(cells) {\n  for (let i = 1; i <= cells; i++) {\n    console.log('🤖 step ' + i);\n  }\n}\n\nwalk(4);\nconsole.log('↪️ turn right');\nwalk(2);` },
-      ],
-      takeaway: "«Повторить N раз» в Blockly = цикл for в JavaScript. Вы уже программируете! ¦ Blockly'dagi «N marta takrorla» = JavaScript'dagi for tsikli. Siz allaqachon dasturlayapsiz! ¦ Blockly's “repeat N times” = a JavaScript for loop. You're already coding!",
-      notes: { say: ["Шаг 3: функция walk — ещё один способ не повторяться. Подробно функции будут в модуле JS."], min: 6 },
-    },
-    {
-      type: 'poll',
+      type: 'truefalse',
       stage: 3,
-      title: "Найдите самый короткий путь ¦ Eng qisqa yo'lni toping ¦ Find the shortest program",
-      chat: "голосуйте 1–3 ¦ 1–3 bilan ovoz bering ¦ vote 1–3",
-      question: "Робот рисует квадрат: 4 раза «шаг, шаг, шаг, поворот». Какая программа короче? ¦ Robot kvadrat chizadi: 4 marta «qadam, qadam, qadam, burilish». Qaysi dastur qisqaroq? ¦ The robot draws a square: 4× “step, step, step, turn”. Which program is shortest?",
-      options: [
-        { label: "16 блоков подряд ¦ Ketma-ket 16 ta blok ¦ 16 blocks in a row" },
-        { label: "4 × (повторить 3: шаг; поворот) ¦ 4 × (3 takrorla: qadam; burilish) ¦ 4 × (repeat 3: step; turn)" },
-        { label: "повторить 4: (повторить 3: шаг; поворот) ¦ 4 takrorla: (3 takrorla: qadam; burilish) ¦ repeat 4: (repeat 3: step; turn)", detail: "Верно ✔ — повтор внутри повтора ¦ To'g'ri ✔ — takror ichida takror ¦ Correct ✔ — a repeat inside a repeat" },
+      title: "Правда или миф? ¦ Rostmi yoki afsona? ¦ True or myth?",
+      chat: "пишите «правда» или «миф» ¦ «rost» yoki «afsona» deb yozing ¦ write “true” or “myth”",
+      statements: [
+        { text: "Компьютер сам догадается, куда идти ¦ Kompyuter qayerga borishni o'zi taxmin qiladi ¦ The computer guesses where to go", truth: false, explain: "Он делает только то, что написано. ¦ U faqat yozilganini qiladi. ¦ It only does what's written." },
+        { text: "Порядок команд важен ¦ Buyruqlar tartibi muhim ¦ Command order matters", truth: true, explain: "Повернуть до или после шага — разный путь. ¦ Qadamdan oldin yoki keyin burilish — har xil yo'l. ¦ Turning before or after a step changes the path." },
+        { text: "Короткая программа делает то же самое ¦ Qisqa dastur xuddi shuni qiladi ¦ The short program does the same", truth: true, explain: "Результат тот же, кода меньше. ¦ Natija o'sha, kod kamroq. ¦ Same result, less code." },
       ],
-      correct: 2,
-      result: "Вложенный повтор: внешний — 4 стороны квадрата, внутренний — 3 шага. Всего 4 блока вместо 16. ¦ Ichma-ich takror: tashqisi — kvadratning 4 tomoni, ichkisi — 3 qadam. 16 o'rniga jami 4 ta blok. ¦ A nested repeat: the outer one for 4 sides, the inner one for 3 steps. 4 blocks instead of 16.",
-      takeaway: "Ищите, что повторяется, — и заворачивайте это в «повторить». ¦ Nima takrorlanayotganini qidiring — va uni «takrorla»ga o'rang. ¦ Look for what repeats, and wrap it in “repeat”.",
-      notes: { say: ["Нарисуйте квадрат в Blockly-черепашке, если есть время."], min: 4 },
-    },
-    {
-      type: 'output',
-      stage: 3,
-      title: "Что выведет программа? ¦ Dastur nimani chiqaradi? ¦ What does the program print?",
-      chat: "пишите ответ до того, как я покажу ¦ men ko'rsatishimdan oldin javob yozing ¦ write your answer before I reveal it",
-      snippets: [
-        { label: "Повтор 3 раза ¦ 3 marta takror ¦ Repeat 3 times", code: `for (let i = 0; i < 3; i++) {\n  console.log('⭐');\n}`, output: ['⭐', '⭐', '⭐'], explain: "i = 0, 1, 2 — три прохода. ¦ i = 0, 1, 2 — uchta o'tish. ¦ i = 0, 1, 2 — three passes." },
-        { label: "Вложенный повтор ¦ Ichma-ich takror ¦ A nested repeat", code: `for (let side = 1; side <= 2; side++) {\n  for (let s = 1; s <= 2; s++) {\n    console.log('step');\n  }\n  console.log('turn');\n}`, output: ['step', 'step', 'turn', 'step', 'step', 'turn'], explain: "Внутренний цикл выполняется целиком на каждом проходе внешнего. ¦ Ichki tsikl tashqi tsiklning har bir o'tishida to'liq bajariladi. ¦ The inner loop runs fully on each outer pass." },
-      ],
-      takeaway: "Вложенные повторы — мощный инструмент, но читайте их снаружи внутрь. ¦ Ichma-ich takrorlar — kuchli vosita, lekin ularni tashqaridan ichkariga o'qing. ¦ Nested repeats are powerful — read them from outside in.",
-      notes: { say: ["Сначала ответы чата, потом раскрываем."], min: 4 },
-    },
-    {
-      type: 'sort',
-      stage: 3,
-      title: "Можно ли упростить? ¦ Soddalashtirish mumkinmi? ¦ Can it be simplified?",
-      chat: "пишите: «1 — повтор» или «1 — уже коротко» ¦ yozing: «1 — takror» yoki «1 — allaqachon qisqa» ¦ write: “1 — repeat” or “1 — already short”",
-      zones: [
-        { id: 'loop', label: "Завернуть в «повторить» ¦ «Takrorla»ga o'rash ¦ Wrap in “repeat”", icon: '🔁' },
-        { id: 'ok', label: "Уже коротко ¦ Allaqachon qisqa ¦ Already short", icon: '✅' },
-      ],
-      items: [
-        { text: "шаг, шаг, шаг, шаг, шаг, шаг ¦ qadam, qadam, qadam, qadam, qadam, qadam ¦ step ×6", zone: 'loop' },
-        { text: "шаг, поворот, прыжок ¦ qadam, burilish, sakrash ¦ step, turn, jump", zone: 'ok', why: "Нет одинаковых частей. ¦ Bir xil qismlar yo'q. ¦ No repeating parts." },
-        { text: "(шаг, поворот) × 4 ¦ (qadam, burilish) × 4 ¦ (step, turn) × 4", zone: 'loop' },
-        { text: "взять ключ, открыть дверь ¦ kalitni olish, eshikni ochish ¦ pick up key, open door", zone: 'ok' },
-      ],
-      takeaway: "Оптимизация — не «всегда короче», а «без лишних повторов». ¦ Optimallashtirish — «doim qisqaroq» emas, balki «ortiqcha takrorlarsiz». ¦ Optimisation isn't “always shorter”; it's “no needless repeats”.",
-      notes: { say: ["Раскладка → «Проверить»."], min: 3 },
+      notes: { min: 3 },
     },
     {
       type: 'mission',
       stage: 4,
-      title: "Миссия: лабиринт за минимум блоков ¦ Missiya: minimal bloklar bilan labirint ¦ Mission: the maze in the fewest blocks",
+      title: "Миссия: оптимизатор ¦ Missiya: optimallashtiruvchi ¦ Mission: optimiser",
       chat: "номера ответов в чат ¦ javob raqamlarini chatga ¦ answer numbers in the chat",
-      goal: "Робот дошёл до звезды за 4 блока! ¦ Robot yulduzga 4 blokda yetib keldi! ¦ The robot reached the star in 4 blocks!",
+      goal: "Программа короткая и работает! ¦ Dastur qisqa va ishlaydi! ¦ The program is short and works!",
       items: [
-        { title: "Что такое алгоритм? ¦ Algoritm nima? ¦ What is an algorithm?", choices: ["Чёткие шаги для решения задачи ¦ Vazifani hal qilish uchun aniq qadamlar ¦ Clear steps that solve a task", "Любая картинка с кодом ¦ Kodli istalgan rasm ¦ Any picture with code"], correct: 0, explain: "Шаги + порядок + результат. ¦ Qadamlar + tartib + natija. ¦ Steps + order + result." },
-        { title: "10 шагов вперёд — это… ¦ 10 qadam oldinga — bu… ¦ 10 steps forward is…", choices: ["10 блоков ¦ 10 ta blok ¦ 10 blocks", "повторить 10: шаг ¦ 10 takrorla: qadam ¦ repeat 10: step"], correct: 1, explain: "Повтор вместо копий. ¦ Nusxalar o'rniga takror. ¦ Repeat instead of copies." },
-        { title: "«Повторить» в JavaScript ¦ JavaScript'da «takrorla» ¦ “Repeat” in JavaScript", choices: ['for', 'console'], correct: 0, explain: "for (let i = 0; i < 10; i++) { … } ¦ for (let i = 0; i < 10; i++) { … } ¦ for (let i = 0; i < 10; i++) { … }" },
+        { title: "«вперёд» 6 раз подряд ¦ Ketma-ket 6 marta «oldinga» ¦ “forward” 6 times in a row", choices: ["repeat 6: forward", "6 отдельных блоков ¦ 6 ta alohida blok ¦ 6 separate blocks"], correct: 0, explain: "Повтор вместо копий. ¦ Nusxalar o'rniga takror. ¦ Repeat instead of copies." },
+        { title: "Что такое алгоритм? ¦ Algoritm nima? ¦ What's an algorithm?", choices: ["Шаги по порядку для решения задачи ¦ Vazifani hal qilish uchun tartibli qadamlar ¦ Ordered steps to solve a task", "Картинка робота ¦ Robot rasmi ¦ A robot picture"], correct: 0, explain: "Как рецепт. ¦ Retsept kabi. ¦ Like a recipe." },
+        { title: "Клеток стало 8 вместо 4 ¦ Kataklar 4 ta o'rniga 8 ta bo'ldi ¦ 8 squares instead of 4", choices: ["Поменять repeat 4 на repeat 8 ¦ repeat 4 ni repeat 8 ga almashtirish ¦ Change repeat 4 to repeat 8", "Дописать 4 блока ¦ 4 ta blok qo'shish ¦ Add 4 blocks"], correct: 0, explain: "Одно число — и готово. ¦ Bitta raqam — va tayyor. ¦ One number and done." },
       ],
-      notes: { say: ["Ответы чата → «Проверить»."], min: 3 },
+      notes: { min: 3 },
     },
     {
       type: 'finale',
       stage: 4,
-      title: "Итог: алгоритмы ¦ Xulosa: algoritmlar ¦ Summary: algorithms",
-      chat: "сколько блоков у вас вышло в лабиринте? ¦ labirintda sizda nechta blok chiqdi? ¦ how many blocks did your maze take?",
-      answer: "Алгоритм — чёткие шаги в строгом порядке. Длинную программу делают короче, когда находят повторяющиеся части и заворачивают их в «повторить N раз» (в JavaScript — цикл for), а повторы внутри повторов — во вложенный цикл. Результат тот же, а читать и менять программу проще. ¦ Algoritm — qat'iy tartibdagi aniq qadamlar. Uzun dastur takrorlanuvchi qismlarni topib, ularni «N marta takrorla»ga (JavaScript'da — for tsikli), takror ichidagi takrorlarni esa ichma-ich tsiklga o'rash orqali qisqartiriladi. Natija o'sha, dasturni o'qish va o'zgartirish esa osonroq. ¦ An algorithm is clear steps in a strict order. You shorten a long program by finding repeating parts and wrapping them in “repeat N times” (a for loop in JavaScript), and repeats within repeats in a nested loop. Same result, easier to read and change.",
+      title: "Итог: алгоритмы и повтор ¦ Xulosa: algoritmlar va takror ¦ Summary: algorithms and repeat",
+      chat: "пройдите первый уровень Blockly Maze! ¦ Blockly Maze'ning birinchi bosqichini o'ting! ¦ beat level 1 of Blockly Maze!",
+      answer: "Алгоритм — это чёткие шаги в строгом порядке. Компьютер не догадывается, а выполняет команды одну за другой. Одну задачу можно решить длинно (одни и те же блоки много раз) или коротко — с блоком «повторить». Короткая программа делает то же самое, её легче читать и менять: это и есть оптимизация. ¦ Algoritm — qat'iy tartibdagi aniq qadamlar. Kompyuter taxmin qilmaydi, buyruqlarni birin-ketin bajaradi. Bitta vazifani uzun (bir xil bloklar ko'p marta) yoki qisqa — «takrorla» bloki bilan hal qilish mumkin. Qisqa dastur xuddi shuni qiladi, uni o'qish va o'zgartirish oson: bu optimallashtirish. ¦ An algorithm is clear steps in a strict order. Computers don't guess; they run commands one by one. A task can be solved the long way (the same blocks over and over) or the short way with a “repeat” block. The short program does the same and is easier to read and change — that's optimisation.",
       icon: '🤖',
-      badge: "Оптимизатор ¦ Optimallashtiruvchi ¦ Optimiser",
+      badge: "Укротитель роботов ¦ Robotlar tarbiyachisi ¦ Robot tamer",
       badgeSub: "Tilda · Git · техническая 3 ¦ Tilda · Git · texnik 3 ¦ Tilda · Git · technical 3",
       homeworkTitle: "Дома ¦ Uyda ¦ At home",
       homework: [
-        "Пройдите 5 уровней Blockly-лабиринта, стараясь использовать как можно меньше блоков. ¦ Blockly labirintining 5 ta darajasini imkon qadar kam blok bilan o'ting. ¦ Beat 5 Blockly maze levels using as few blocks as you can.",
-        "Запишите свой утренний алгоритм и найдите в нём повтор и условие. ¦ Tonggi algoritmingizni yozing va undagi takror va shartni toping. ¦ Write down your morning algorithm and find a repeat and a condition in it.",
+        "Пройдите 5 уровней Blockly Games «Maze». ¦ Blockly Games «Maze»ning 5 ta bosqichini o'ting. ¦ Beat 5 levels of Blockly Games “Maze”.",
+        "Найдите уровень, где повтор сокращает программу. ¦ Takror dasturni qisqartiradigan bosqichni toping. ¦ Find a level where repeat shortens the program.",
       ],
-      takeaway: "Следующий шаг — игра с AI: идея → правила → работающий проект. ¦ Keyingi qadam — AI bilan o'yin: g'oya → qoidalar → ishlaydigan loyiha. ¦ Next: a game with AI — idea → rules → working project.",
-      notes: { say: ["Итог."], min: 2 },
+      takeaway: "Дальше: создаём игру вместе с AI. ¦ Keyingisi: AI bilan birga o'yin yaratamiz. ¦ Next: building a game together with AI.",
+      notes: { min: 2 },
     },
   ],
 });

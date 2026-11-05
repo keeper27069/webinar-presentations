@@ -1,171 +1,142 @@
 import { kit } from '@engine/kit';
 
-const CSS = `body{margin:0;font-family:system-ui;background:#0f1430}
-.art{position:relative;height:340px;overflow:hidden;background:linear-gradient(160deg,#141b45,#2b1f5c)}
-.title{position:absolute;color:#fff;font-weight:800;margin:0}
-.text{position:absolute;color:#b9c2ff;margin:0}
-.btn{position:absolute;background:#ff6f91;color:#fff;border:0;border-radius:24px;font-weight:700}
-.ball{position:absolute;border-radius:50%;background:radial-gradient(circle at 30% 30%,#ffd76a,#ff8a3d)}`;
-const DESK = `<style>.title{left:60px;top:90px;font-size:44px}.text{left:60px;top:160px;font-size:18px;width:340px}.btn{left:60px;top:240px;padding:14px 28px;font-size:16px}.ball{left:520px;top:60px;width:220px;height:220px}</style>`;
-const MOB = `<style>.title{left:20px;top:150px;font-size:30px}.text{left:20px;top:196px;font-size:15px;width:260px}.btn{left:20px;top:270px;padding:12px 22px;font-size:15px}.ball{left:90px;top:20px;width:120px;height:120px}</style>`;
-const BODY = `<div class="art"><div class="ball"></div><h1 class="title">Orbit Studio</h1><p class="text">Designing sites that feel like space travel</p><button class="btn">Launch 🚀</button></div>`;
+const CSS = `.wrap{display:grid;place-items:center;height:100%;font-family:Manrope,system-ui}
+.art{position:relative;width:520px;height:320px;border-radius:16px;background:#fff4e6;box-shadow:0 10px 30px #0001;overflow:hidden;outline:3px dashed #0fb5a6;outline-offset:-3px}
+.el{position:absolute}
+.ttl{left:30px;top:40px;font-size:34px;font-weight:800;line-height:1.1;width:260px}
+.btn{left:30px;top:200px;padding:12px 24px;border-radius:12px;background:#0fb5a6;color:#fff;font-weight:800}
+.dot{left:340px;top:60px;width:150px;height:150px;border-radius:50%;background:#f2573a;display:grid;place-items:center;font-size:70px}
+.lbl{position:absolute;left:8px;bottom:8px;padding:3px 10px;border-radius:8px;background:#16181f;color:#fff;font:700 14px JetBrains Mono,monospace}
+.m1 .dot{left:200px;top:140px}.m2 .dot{left:340px;top:150px;width:110px;height:110px;font-size:50px}
+.phone{width:280px;height:420px}
+.phone .ttl{width:220px;font-size:28px}
+.phone .dot{left:300px}
+.fix .dot{left:70px;top:200px;width:130px;height:130px;font-size:60px}.fix .btn{top:350px}.fix .ttl{top:30px}`;
+const art = (cls: string, lbl: string) => `<div class="wrap"><div class="art ${cls}"><div class="el ttl">Fresh bread every morning</div><div class="el btn">Order</div><div class="el dot">🥐</div><span class="lbl">${lbl}</span></div></div>`;
 
 export default kit({
   id: 'tilda-git-t02',
-  title: "Основы Zero Block и адаптивный дизайн ¦ Zero Block asoslari va moslashuvchan dizayn ¦ Zero Block basics and responsive design",
-  question: "Как сделать на Tilda свой уникальный блок, который красиво выглядит и на телефоне? ¦ Tilda'da telefonda ham chiroyli ko'rinadigan o'z noyob blokingizni qanday yaratish mumkin? ¦ How do you make your own unique Tilda block that also looks great on a phone?",
-  route: ["Что такое Zero Block ¦ Zero Block nima ¦ What Zero Block is", "Элементы ¦ Elementlar ¦ Elements", "Координаты ¦ Koordinatalar ¦ Coordinates", "Адаптив ¦ Moslashuv ¦ Responsive", "Финал ¦ Yakun ¦ Finale"],
+  title: "Основы Zero Block и адаптивный дизайн ¦ Zero Block asoslari va adaptiv dizayn ¦ Zero Block basics and responsive design",
+  question: "Как сделать на Tilda свой уникальный блок, который красиво выглядит и на телефоне? ¦ Tilda'da telefonda ham chiroyli ko'rinadigan o'z noyob blokingizni qanday yasash mumkin? ¦ How do you make a unique Tilda block that also looks good on phones?",
+  route: ["Холст ¦ Kanvas ¦ The canvas", "Координаты ¦ Koordinatalar ¦ Coordinates", "Телефон ¦ Telefon ¦ Phone", "Практика ¦ Amaliyot ¦ Practice", "Финал ¦ Yakun ¦ Finale"],
   scenes: [
     {
       type: 'intro',
       stage: 0,
       icon: '🎨',
       kicker: "Tilda · Git · техническая тема 2 ¦ Tilda · Git · texnik mavzu 2 ¦ Tilda · Git · technical topic 2",
-      title: "Чистый холст внутри Tilda ¦ Tilda ichidagi toza tuval ¦ A blank canvas inside Tilda",
-      chat: "что нарисуем на пустом холсте? предлагайте! ¦ bo'sh tuvalga nima chizamiz? taklif qiling! ¦ what shall we draw on the blank canvas? suggest!",
-      lead: "Готовые блоки похожи у тысяч сайтов. Zero Block — пустой холст, на котором вы сами размещаете текст, картинки, кнопки и фигуры. ¦ Tayyor bloklar minglab saytlarda bir xil. Zero Block — bo'sh tuval, unda matn, rasm, tugma va shakllarni o'zingiz joylashtirasiz. ¦ Ready blocks look alike on thousands of sites. Zero Block is a blank canvas where you place text, images, buttons and shapes yourself.",
-      facts: [
-        "Шаблон — быстро, но как у всех ¦ Shablon — tez, lekin hammaniki kabi ¦ Template: fast, but like everyone else's",
-        "Zero Block — уникальный дизайн ¦ Zero Block — noyob dizayn ¦ Zero Block: a unique design",
-        "И отдельная раскладка для телефона ¦ Va telefon uchun alohida joylashuv ¦ Plus a separate phone layout",
-      ],
-      takeaway: "Сегодня соберём свою обложку и настроим её для телефона. ¦ Bugun o'z muqovamizni yig'amiz va uni telefon uchun sozlaymiz. ¦ Today we'll build our own cover and tune it for phones.",
-      notes: { say: ["Покажите в настоящей Tilda: «Все блоки» → Zero Block → «Редактировать блок».", "Названия кнопок могут немного отличаться в новых версиях Tilda."], switch: "Tilda ¦ Tilda ¦ Tilda", min: 3 },
+      title: "Чистый холст внутри Tilda ¦ Tilda ichidagi toza kanvas ¦ A blank canvas inside Tilda",
+      chat: "что нарисуем на пустом холсте? ¦ bo'sh kanvasga nima chizamiz? ¦ what shall we put on the blank canvas?",
+      lead: "Готовые блоки похожи у тысяч сайтов. Zero Block — пустой холст: вы сами ставите текст, картинки, кнопки и фигуры куда хотите. ¦ Tayyor bloklar minglab saytlarda o'xshash. Zero Block — bo'sh kanvas: matn, rasm, tugma va shakllarni o'zingiz xohlagan joyga qo'yasiz. ¦ Ready blocks look alike on thousands of sites. Zero Block is a blank canvas: you place text, images, buttons and shapes wherever you like.",
+      facts: ["Шаблон — быстро, но как у всех ¦ Shablon — tez, lekin hammadagidek ¦ Templates are quick but common", "Zero Block — уникальный дизайн ¦ Zero Block — noyob dizayn ¦ Zero Block is unique", "Отдельная раскладка для телефона ¦ Telefon uchun alohida joylashuv ¦ A separate phone layout"],
+      takeaway: "Посмотрим, как элемент «знает», где стоять. ¦ Element qayerda turishini qanday «bilishini» ko'ramiz. ¦ Let's see how an element knows where to stand.",
+      notes: { say: ["Покажите в Tilda: «Все блоки» → Zero Block → «Редактировать блок». Названия кнопок могут отличаться."], min: 3 },
     },
     {
-      type: 'cards',
-      stage: 1,
-      title: "Из чего собирают Zero Block ¦ Zero Block nimadan yig'iladi ¦ What Zero Block is built from",
-      chat: "какой элемент добавим первым? ¦ birinchi qaysi elementni qo'shamiz? ¦ which element do we add first?",
-      cards: [
-        { icon: '🔤', front: "Текст ¦ Matn ¦ Text", back: "Заголовки и абзацы. Шрифт, размер, цвет — в панели справа. ¦ Sarlavha va xatboshilar. Shrift, o'lcham, rang — o'ngdagi panelda. ¦ Headings and paragraphs. Font, size, colour in the right panel." },
-        { icon: '🖼️', front: "Изображение ¦ Rasm ¦ Image", back: "Фото и иллюстрации. Можно скруглить углы и добавить тень. ¦ Foto va illyustratsiyalar. Burchaklarni yumaloqlash va soya qo'shish mumkin. ¦ Photos and illustrations, with rounded corners and shadows." },
-        { icon: '⬛', front: "Фигура ¦ Shakl ¦ Shape", back: "Прямоугольники и круги — фон, плашки, декор. ¦ To'rtburchak va doiralar — fon, plashkalar, bezak. ¦ Rectangles and circles for backgrounds, badges, decor." },
-        { icon: '🔘', front: "Кнопка ¦ Tugma ¦ Button", back: "Ссылка на раздел, форму или другую страницу. ¦ Bo'lim, forma yoki boshqa sahifaga havola. ¦ A link to a section, form or another page." },
-        { icon: '📐', front: "Артборд ¦ Artbord ¦ Artboard", back: "Сам холст: его высота и фон. Элементы живут внутри. ¦ Tuvalning o'zi: balandligi va foni. Elementlar ichida yashaydi. ¦ The canvas itself: its height and background. Elements live inside." },
-        { icon: '🧲', front: "Сетка ¦ To'r ¦ Grid", back: "Grid container — элементы выравниваются по ширине контента, а не по краю экрана. ¦ Grid container — elementlar ekran chetiga emas, kontent kengligiga tekislanadi. ¦ Grid container aligns elements to the content width, not the screen edge." },
+      type: 'animate',
+      stage: 0,
+      title: "Из чего собирают Zero Block ¦ Zero Block nimadan yig'iladi ¦ What a Zero Block is made of",
+      chat: "какой элемент добавим первым? ¦ qaysi elementni birinchi qo'shamiz? ¦ which element first?",
+      actors: [
+        { id: 'board', icon: '🟧', label: "Артборд — холст ¦ Artbord — kanvas ¦ Artboard — the canvas" },
+        { id: 't', icon: '🔤', label: "Текст ¦ Matn ¦ Text" },
+        { id: 'i', icon: '🖼️', label: "Изображение ¦ Rasm ¦ Image" },
+        { id: 'f', icon: '⚪', label: "Фигура ¦ Shakl ¦ Shape" },
+        { id: 'b', icon: '🔘', label: "Кнопка ¦ Tugma ¦ Button" },
       ],
-      takeaway: "Всего несколько типов элементов — а комбинаций бесконечно много. ¦ Elementlar turi bir nechta — kombinatsiyalar esa cheksiz. ¦ Only a few element types, but endless combinations.",
-      notes: { say: ["Открывайте карточки и сразу добавляйте такой же элемент в Tilda."], switch: "Tilda ¦ Tilda ¦ Tilda", min: 5 },
-    },
-    {
-      type: 'live',
-      stage: 2,
-      title: "Координаты: как элемент знает, где стоять ¦ Koordinatalar: element qayerda turishini qanday biladi ¦ Coordinates: how an element knows where to stand",
-      chat: "куда сдвинуть кнопку? пишите числа left и top ¦ tugmani qayerga siljitamiz? left va top raqamlarini yozing ¦ where should the button move? write left and top numbers",
-      task: "✍️ Меняйте left и top — так работает перетаскивание в Zero Block ¦ ✍️ left va top'ni o'zgartiring — Zero Block'da sudrash shunday ishlaydi ¦ ✍️ Change left and top — that's how dragging works in Zero Block",
       steps: [
-        { label: "Один элемент ¦ Bitta element ¦ One element", html: `<div class="art"><button class="btn">Launch 🚀</button></div>`, css: `${CSS}\n.btn {\n  left: 60px;\n  top: 140px;\n  padding: 14px 28px;\n}` },
-        { label: "Вся обложка ¦ Butun muqova ¦ Whole cover", html: BODY, css: `${CSS}\n.title { left: 60px; top: 90px; font-size: 44px; }\n.text { left: 60px; top: 160px; width: 340px; }\n.btn { left: 60px; top: 240px; padding: 14px 28px; }\n.ball { left: 520px; top: 60px; width: 220px; height: 220px; }` },
+        { say: "Артборд — сам холст: его высота и фон. ¦ Artbord — kanvasning o'zi: uning balandligi va foni. ¦ The artboard is the canvas itself: height and background.", at: { board: [60, 50, 2.2] } },
+        { say: "Добавляем текст и картинку… ¦ Matn va rasm qo'shamiz… ¦ Add text and an image…", at: { t: [10, 25], i: [10, 75] } },
+        { say: "…и тянем их на холст — куда захотим! ¦ …va ularni kanvasga sudraymiz — xohlagan joyga! ¦ …and drag them onto the canvas — anywhere!", at: { t: [48, 34], i: [72, 62] } },
+        { say: "Фигура и кнопка — и обложка готова. ¦ Shakl va tugma — va muqova tayyor. ¦ A shape and a button and the cover is done.", at: { f: [74, 30], b: [46, 70] }, pulse: ['t', 'i', 'f', 'b'] },
       ],
-      takeaway: "В Zero Block у каждого элемента есть X и Y — отступ от левого и верхнего края. Это position: absolute из CSS. ¦ Zero Block'da har bir elementning X va Y'i bor — chap va yuqori chetdan masofa. Bu CSS'dagi position: absolute. ¦ Every Zero Block element has X and Y — distance from the left and top. That's CSS position: absolute.",
-      notes: { say: ["Покажите поля X и Y в панели Tilda и сравните с left/top здесь."], min: 6 },
+      takeaway: "Всего 4–5 типов элементов — а вариантов бесконечно много. ¦ Atigi 4–5 turdagi element — variantlar esa cheksiz. ¦ Only 4–5 element types, endless combinations.",
+      notes: { min: 3 },
+    },
+    {
+      type: 'show',
+      stage: 1,
+      title: "X и Y: адрес элемента ¦ X va Y: element manzili ¦ X and Y: an element's address",
+      chat: "куда сдвинуть круассан? пишите числа ¦ kruassanni qayerga suramiz? raqamlarni yozing ¦ where shall we move the croissant? write numbers",
+      lang: 'css',
+      css: CSS,
+      steps: [
+        { code: '.croissant {\n  position: absolute;\n  left: 340px; /* X */\n  top: 60px;   /* Y */\n}', line: 3, html: art('', 'X 340 · Y 60'), say: "У каждого элемента есть X (от левого края) и Y (от верхнего). ¦ Har bir elementda X (chap chetdan) va Y (yuqori chetdan) bor. ¦ Each element has an X (from the left) and a Y (from the top)." },
+        { code: '.croissant {\n  left: 200px;\n  top: 140px;\n}', line: 2, html: art('m1', 'X 200 · Y 140'), say: "Меняем X и Y — элемент переехал. Это и есть перетаскивание! ¦ X va Y ni o'zgartiramiz — element ko'chdi. Sudrash aynan shu! ¦ Change X and Y and it moves. That's what dragging does!" },
+        { code: '.croissant {\n  left: 340px;\n  top: 150px;\n  width: 110px;\n}', line: 4, html: art('m2', 'X 340 · Y 150 · W 110'), say: "А ещё размер — ширина и высота. ¦ Va yana o'lcham — kenglik va balandlik. ¦ Plus size: width and height." },
+      ],
+      takeaway: "Zero Block — это position: absolute из CSS с удобными ручками. ¦ Zero Block — bu qulay tutqichli CSS'dagi position: absolute. ¦ Zero Block is CSS position: absolute with handy handles.",
+      notes: { say: ["Покажите поля X и Y в панели Tilda и сравните."], min: 5 },
+    },
+    {
+      type: 'show',
+      stage: 2,
+      title: "А на телефоне? ¦ Telefonda-chi? ¦ And on a phone?",
+      chat: "что случится с круассаном на узком экране? ¦ tor ekranda kruassan bilan nima bo'ladi? ¦ what happens to the croissant on a narrow screen?",
+      lang: 'css',
+      css: CSS,
+      steps: [
+        { code: '/* desktop: 1200px */\n.croissant { left: 340px; }', line: 2, html: art('', 'Desktop'), say: "На компьютере всё красиво. ¦ Kompyuterda hammasi chiroyli. ¦ On a computer it looks great." },
+        { code: '/* phone: 320px */\n.croissant { left: 340px; } 😱', line: 2, html: art('phone', 'Phone 320px'), say: "Экран телефона уже 340 пикселей — круассан уехал за край! ¦ Telefon ekrani 340 pikseldan tor — kruassan chetdan chiqib ketdi! ¦ The phone is narrower than 340px — the croissant falls off the edge!" },
+        { code: '/* phone layout */\n.croissant {\n  left: 70px;\n  top: 200px;\n}', line: 3, html: art('phone fix', 'Phone ✓'), say: "Решение: в Zero Block для телефона делают свою раскладку — переставляем элементы. ¦ Yechim: Zero Block'da telefon uchun alohida joylashuv qilinadi — elementlarni qayta joylaymiz. ¦ The fix: Zero Block has a separate phone layout — rearrange the elements." },
+      ],
+      takeaway: "Для каждого размера экрана — своя расстановка. Это и есть адаптив. ¦ Har bir ekran o'lchami uchun — o'z joylashuvi. Bu adaptiv. ¦ A layout per screen size — that's responsive design.",
+      notes: { say: ["Покажите переключатель ширин в Zero Block (компьютер, планшет, телефон)."], min: 5 },
     },
     {
       type: 'poll',
-      stage: 3,
-      title: "Что случится на телефоне? ¦ Telefonda nima bo'ladi? ¦ What happens on a phone?",
-      chat: "голосуйте 1–3 ¦ 1–3 bilan ovoz bering ¦ vote 1–3",
-      question: "Кружок стоит на left: 520px. Экран телефона — 320–480px. Что будет? ¦ Doira left: 520px'da turibdi. Telefon ekrani — 320–480px. Nima bo'ladi? ¦ The circle sits at left: 520px. A phone screen is 320–480px wide. What happens?",
+      stage: 2,
+      title: "Проверим ¦ Tekshiramiz ¦ Quick check",
+      chat: "голосуйте 1–3 ¦ 1–3 ovoz bering ¦ vote 1–3",
+      question: "Кнопка стоит на X 900. Экран телефона 360px. Что будет? ¦ Tugma X 900 da turibdi. Telefon ekrani 360px. Nima bo'ladi? ¦ A button sits at X 900. The phone is 360px wide. What happens?",
       options: [
-        { label: "Tilda сама всё уменьшит ¦ Tilda o'zi hammasini kichraytiradi ¦ Tilda shrinks everything itself" },
-        { label: "Кружок уедет за край экрана ¦ Doira ekran chetidan chiqib ketadi ¦ The circle slides off the screen", detail: "Верно ✔ ¦ To'g'ri ✔ ¦ Correct ✔" },
-        { label: "Страница не откроется ¦ Sahifa ochilmaydi ¦ The page won't open" },
+        { label: "Tilda сама всё уменьшит ¦ Tilda hammasini o'zi kichraytiradi ¦ Tilda shrinks everything itself" },
+        { label: "Кнопку не будет видно, пока не настроим телефон ¦ Telefonni sozlamagunimizcha tugma ko'rinmaydi ¦ The button is hidden until we set up the phone layout" },
+        { label: "Кнопка станет больше ¦ Tugma kattaroq bo'ladi ¦ The button gets bigger" },
       ],
       correct: 1,
-      result: "Координаты абсолютные — 520px не помещается в 320px. Поэтому для каждого размера экрана раскладку настраивают отдельно. ¦ Koordinatalar mutlaq — 520px 320px'ga sig'maydi. Shuning uchun har bir ekran o'lchami uchun joylashuv alohida sozlanadi. ¦ Coordinates are absolute — 520px won't fit in 320px. So each screen size gets its own layout.",
-      takeaway: "Свобода Zero Block = ответственность за каждый размер экрана. ¦ Zero Block erkinligi = har bir ekran o'lchami uchun mas'uliyat. ¦ Zero Block's freedom = responsibility for every screen size.",
-      notes: { say: ["После голосования переключите в Tilda на мобильный размер и покажите, что элемент вылез."], min: 3 },
+      result: "Координаты не меняются сами — раскладку для телефона настраиваем вручную. ¦ Koordinatalar o'z-o'zidan o'zgarmaydi — telefon joylashuvini qo'lda sozlaymiz. ¦ Coordinates don't change themselves — set the phone layout by hand.",
+      notes: { min: 2 },
     },
     {
-      type: 'numbers',
+      type: 'live',
       stage: 3,
-      title: "Брейкпоинты Zero Block ¦ Zero Block brekpointlari ¦ Zero Block breakpoints",
-      chat: "какой экран у вас прямо сейчас? ¦ hozir sizda qanday ekran? ¦ what screen are you on right now?",
-      facts: [
-        { icon: '🖥️', value: '1200', label: "Компьютер — основной размер ¦ Kompyuter — asosiy o'lcham ¦ Desktop — the main size" },
-        { icon: '💻', value: '960', label: "Планшет горизонтально ¦ Planshet gorizontal ¦ Tablet, landscape" },
-        { icon: '📲', value: '640', label: "Планшет вертикально ¦ Planshet vertikal ¦ Tablet, portrait" },
-        { icon: '📱', value: '480', label: "Телефон горизонтально ¦ Telefon gorizontal ¦ Phone, landscape" },
-        { icon: '📱', value: '320', label: "Телефон вертикально ¦ Telefon vertikal ¦ Phone, portrait" },
-      ],
-      takeaway: "Сначала делаем 1200, потом переключаемся на каждый размер и двигаем элементы. Это те же media queries, только мышкой. ¦ Avval 1200'ni qilamiz, keyin har bir o'lchamga o'tib elementlarni siljitamiz. Bu o'sha media queries, faqat sichqoncha bilan. ¦ Build 1200 first, then switch to each size and move elements. Same as media queries, just with the mouse.",
-      notes: { say: ["Это стандартный набор размеров Zero Block — покажите переключатель сверху редактора. Если в вашей версии набор другой, скажите об этом."], min: 3 },
-    },
-    {
-      type: 'browser',
-      stage: 3,
-      title: "Одна обложка — две раскладки ¦ Bitta muqova — ikki joylashuv ¦ One cover, two layouts",
-      chat: "какая версия вам нравится больше? ¦ qaysi versiya sizga ko'proq yoqadi? ¦ which version do you like more?",
-      tabs: [
-        { label: "1200 · компьютер ¦ 1200 · kompyuter ¦ 1200 · desktop", url: 'orbit-studio.example', css: CSS, html: DESK + BODY, note: "Текст слева, кружок справа — места хватает. ¦ Matn chapda, doira o'ngda — joy yetarli. ¦ Text on the left, circle on the right — plenty of room." },
-        { label: "320 · без настройки ¦ 320 · sozlamasiz ¦ 320 · not tuned", url: 'orbit-studio.example', css: CSS, html: DESK + BODY, width: 320, note: "Та же раскладка на телефоне: кружок уехал, текст не влезает. ¦ Telefonda o'sha joylashuv: doira chiqib ketdi, matn sig'maydi. ¦ Same layout on a phone: the circle is gone, the text doesn't fit." },
-        { label: "320 · настроено ¦ 320 · sozlangan ¦ 320 · tuned", url: 'orbit-studio.example', css: CSS, html: MOB + BODY, width: 320, note: "Кружок сверху и меньше, шрифт мельче, всё в одну колонку. ¦ Doira yuqorida va kichikroq, shrift maydaroq, hammasi bitta ustunda. ¦ Smaller circle on top, smaller font, everything in one column." },
-      ],
-      takeaway: "На телефоне элементы обычно встают в одну колонку: картинка → заголовок → текст → кнопка. ¦ Telefonda elementlar odatda bitta ustunga tiziladi: rasm → sarlavha → matn → tugma. ¦ On phones elements usually stack in one column: image → heading → text → button.",
-      notes: { say: ["Повторите то же в Tilda на брейкпоинте 320."], switch: "Tilda ¦ Tilda ¦ Tilda", min: 6 },
-    },
-    {
-      type: 'sort',
-      stage: 3,
-      title: "Где это настраивают? ¦ Buni qayerda sozlashadi? ¦ Where is this set?",
-      chat: "пишите: «размер шрифта на телефоне — брейкпоинт 320» ¦ yozing: «telefondagi shrift o'lchami — 320 brekpoint» ¦ write: “phone font size — breakpoint 320”",
-      zones: [
-        { id: 'all', label: "Один раз для всех экранов ¦ Barcha ekranlar uchun bir marta ¦ Once for all screens", icon: '🌐' },
-        { id: 'bp', label: "Отдельно на брейкпоинте ¦ Brekpointda alohida ¦ Per breakpoint", icon: '📱' },
-      ],
-      items: [
-        { text: "Текст заголовка ¦ Sarlavha matni ¦ The heading text", zone: 'all', why: "Текст один — меняется только вид. ¦ Matn bitta — faqat ko'rinish o'zgaradi. ¦ The text is the same; only looks change." },
-        { text: "Размер шрифта на телефоне ¦ Telefondagi shrift o'lchami ¦ Font size on phone", zone: 'bp' },
-        { text: "Позиция кружка X и Y ¦ Doira pozitsiyasi X va Y ¦ The circle's X and Y", zone: 'bp' },
-        { text: "Ссылка у кнопки ¦ Tugma havolasi ¦ The button's link", zone: 'all' },
-        { text: "Высота артборда ¦ Artbord balandligi ¦ Artboard height", zone: 'bp' },
-      ],
-      takeaway: "Содержимое общее, а размеры и позиции — свои для каждого экрана. ¦ Kontent umumiy, o'lcham va pozitsiyalar esa har bir ekranga o'ziniki. ¦ Content is shared; sizes and positions are per screen.",
-      notes: { say: ["Раскладка → «Проверить»."], min: 3 },
-    },
-    {
-      type: 'truefalse',
-      stage: 3,
-      title: "Правда или миф? ¦ Haqiqatmi yoki afsona? ¦ True or myth?",
-      chat: "номер и «правда»/«миф» ¦ raqam va «haqiqat»/«afsona» ¦ number and “true”/“myth”",
-      statements: [
-        { text: "Раскладку для телефона можно не проверять ¦ Telefon joylashuvini tekshirmasa ham bo'ladi ¦ No need to check the phone layout", truth: false, explain: "Большинство посетителей приходят с телефона. ¦ Tashrif buyuruvchilarning ko'pi telefondan keladi. ¦ Most visitors come from phones." },
-        { text: "Элемент можно скрыть только на телефоне ¦ Elementni faqat telefonda yashirish mumkin ¦ You can hide an element on phones only", truth: true, explain: "Лишний декор на маленьком экране лучше убрать. ¦ Kichik ekranda ortiqcha bezakni olib tashlagan ma'qul. ¦ Extra decor is better hidden on small screens." },
-        { text: "Zero Block заменяет знание дизайна ¦ Zero Block dizayn bilimining o'rnini bosadi ¦ Zero Block replaces design skills", truth: false, explain: "Холст свободный — отступы, контраст и иерархию решаете вы. ¦ Tuval erkin — bo'shliqlar, kontrast va ierarxiyani siz hal qilasiz. ¦ The canvas is free — spacing, contrast and hierarchy are your call." },
-      ],
-      takeaway: "Хороший Zero Block — это дизайн, который вы проверили на всех экранах. ¦ Yaxshi Zero Block — barcha ekranlarda tekshirilgan dizayn. ¦ A good Zero Block is a design checked on every screen.",
-      notes: { say: ["Голосуем по пунктам."], min: 3 },
+      title: "Свой Zero Block в коде ¦ Koddagi o'z Zero Block'ingiz ¦ Your own Zero Block in code",
+      chat: "покажите, куда поставили элементы! ¦ elementlarni qayerga qo'yganingizni ko'rsating! ¦ show where you placed the elements!",
+      task: "✍️ Меняйте left и top у круассана и кнопки ¦ ✍️ Kruassan va tugmaning left va top qiymatlarini o'zgartiring ¦ ✍️ Change left and top for the croissant and button",
+      steps: [{ label: "Холст ¦ Kanvas ¦ Canvas", html: '<div class="art">\n  <h2 class="ttl">Fresh bread every morning</h2>\n  <a class="btn">Order</a>\n  <div class="dot">🥐</div>\n</div>', css: 'body { font-family: Manrope, system-ui; margin: 0; }\n.art { position: relative; height: 300px; background: #fff4e6; }\n.ttl { position: absolute; left: 20px; top: 20px; width: 200px; }\n.btn {\n  position: absolute; left: 20px; top: 200px;\n  padding: 10px 20px; border-radius: 10px;\n  background: #0fb5a6; color: white;\n}\n.dot {\n  position: absolute; left: 240px; top: 60px;\n  font-size: 90px;\n}' }],
+      takeaway: "Перетаскивание в Tilda = те же left и top. ¦ Tilda'da sudrash = o'sha left va top. ¦ Dragging in Tilda = the same left and top.",
+      notes: { min: 5 },
     },
     {
       type: 'mission',
       stage: 4,
-      title: "Миссия: обложка без багов ¦ Missiya: xatosiz muqova ¦ Mission: a bug-free cover",
+      title: "Миссия: обложка пекарни ¦ Missiya: novvoyxona muqovasi ¦ Mission: the bakery cover",
       chat: "номера ответов в чат ¦ javob raqamlarini chatga ¦ answer numbers in the chat",
-      goal: "Обложка выглядит отлично на всех экранах! ¦ Muqova barcha ekranlarda a'lo ko'rinadi! ¦ The cover looks great on every screen!",
+      goal: "Обложка красива везде! ¦ Muqova hamma joyda chiroyli! ¦ The cover looks good everywhere!",
       items: [
-        { title: "С какого размера начинать? ¦ Qaysi o'lchamdan boshlash kerak? ¦ Which size do you start with?", choices: ['320', '1200'], correct: 1, explain: "В Zero Block основная версия — 1200, остальные подстраиваем. ¦ Zero Block'da asosiy versiya — 1200, qolganlarini moslaymiz. ¦ In Zero Block 1200 is the main version; the rest are adjusted." },
-        { title: "Кнопка вылезла на 320 ¦ Tugma 320'da chiqib ketdi ¦ The button spills out at 320", choices: ["Сдвинуть её на брейкпоинте 320 ¦ Uni 320 brekpointda siljitish ¦ Move it at breakpoint 320", "Удалить кнопку везде ¦ Tugmani hamma joyda o'chirish ¦ Delete it everywhere"], correct: 0, explain: "Правим только там, где сломано. ¦ Faqat buzilgan joyda tuzatamiz. ¦ Fix it only where it broke." },
-        { title: "Чтобы выровнять по контенту ¦ Kontent bo'yicha tekislash uchun ¦ To align with the content", choices: ["Grid container ¦ Grid container ¦ Grid container", "Window container ¦ Window container ¦ Window container"], correct: 0, explain: "Grid — по сетке контента, Window — по краю окна браузера. ¦ Grid — kontent to'ri bo'yicha, Window — brauzer oynasi cheti bo'yicha. ¦ Grid follows the content grid; Window follows the browser edge." },
+        { title: "Что значит Y? ¦ Y nimani anglatadi? ¦ What does Y mean?", choices: ["Отступ сверху ¦ Yuqoridan bo'shliq ¦ Distance from the top", "Цвет ¦ Rang ¦ Colour"], correct: 0, explain: "Y = top. ¦ Y = top. ¦ Y = top." },
+        { title: "Элемент уехал на телефоне ¦ Element telefonda chiqib ketdi ¦ An element slides off on a phone", choices: ["Настроить раскладку для телефона ¦ Telefon joylashuvini sozlash ¦ Set the phone layout", "Удалить его ¦ Uni o'chirish ¦ Delete it"], correct: 0, explain: "У каждого экрана своя расстановка. ¦ Har bir ekranning o'z joylashuvi bor. ¦ Each screen has its own layout." },
+        { title: "Когда нужен Zero Block? ¦ Zero Block qachon kerak? ¦ When is Zero Block needed?", choices: ["Нужен уникальный дизайн ¦ Noyob dizayn kerak ¦ You need a unique design", "Хватит обычного меню ¦ Oddiy menyu yetadi ¦ A normal menu will do"], correct: 0, explain: "Для простого — готовые блоки. ¦ Oddiy narsa uchun — tayyor bloklar. ¦ Simple things use ready blocks." },
       ],
-      notes: { say: ["Ответы чата → «Проверить»."], min: 3 },
+      notes: { min: 3 },
     },
     {
       type: 'finale',
       stage: 4,
       title: "Итог: Zero Block ¦ Xulosa: Zero Block ¦ Summary: Zero Block",
-      chat: "пришлите ссылку на свою обложку из Zero Block! ¦ Zero Block'dagi muqovangiz havolasini yuboring! ¦ share your Zero Block cover!",
-      answer: "Zero Block — пустой холст в Tilda: текст, картинки, фигуры и кнопки ставятся по координатам X и Y, как position: absolute. Поэтому дизайн делают на 1200, а затем переключаются на брейкпоинты 960, 640, 480 и 320 и для каждого двигают, уменьшают или скрывают элементы. ¦ Zero Block — Tilda'dagi bo'sh tuval: matn, rasm, shakl va tugmalar position: absolute kabi X va Y koordinatalari bo'yicha qo'yiladi. Shuning uchun dizayn 1200'da qilinadi, so'ngra 960, 640, 480 va 320 brekpointlarga o'tib, har birida elementlar siljitiladi, kichraytiriladi yoki yashiriladi. ¦ Zero Block is Tilda's blank canvas: text, images, shapes and buttons sit at X and Y coordinates, like position: absolute. So you design at 1200, then switch to 960, 640, 480 and 320 and move, shrink or hide elements for each.",
+      chat: "что сделаете в Zero Block первым? ¦ Zero Block'da birinchi nima qilasiz? ¦ what will you build first in Zero Block?",
+      answer: "Zero Block — пустой холст в Tilda, где вы сами расставляете текст, картинки, фигуры и кнопки. У каждого элемента есть координаты X и Y — это left и top из CSS (position: absolute). На узком экране элементы могут уехать за край, поэтому для телефона делают отдельную раскладку. ¦ Zero Block — Tilda'dagi bo'sh kanvas, unda matn, rasm, shakl va tugmalarni o'zingiz joylashtirasiz. Har bir elementning X va Y koordinatalari bor — bu CSS'dagi left va top (position: absolute). Tor ekranda elementlar chetdan chiqib ketishi mumkin, shuning uchun telefon uchun alohida joylashuv qilinadi. ¦ Zero Block is a blank Tilda canvas where you place text, images, shapes and buttons yourself. Each element has X and Y coordinates — CSS left and top (position: absolute). On narrow screens elements can slide off, so phones get a separate layout.",
       icon: '🎨',
-      badge: "Дизайнер Zero Block ¦ Zero Block dizayneri ¦ Zero Block designer",
+      badge: "Художник Zero Block ¦ Zero Block rassomi ¦ Zero Block artist",
       badgeSub: "Tilda · Git · техническая 2 ¦ Tilda · Git · texnik 2 ¦ Tilda · Git · technical 2",
       homeworkTitle: "Дома ¦ Uyda ¦ At home",
       homework: [
-        "Сделайте в Zero Block обложку для выдуманной студии: заголовок, текст, кнопка, декор. ¦ Zero Block'da o'ylab topilgan studiya uchun muqova yarating: sarlavha, matn, tugma, bezak. ¦ Make a Zero Block cover for a made-up studio: heading, text, button, decor.",
-        "Настройте её на 320 и пришлите скриншоты компьютерной и мобильной версии. ¦ Uni 320'da sozlang va kompyuter hamda mobil versiya skrinshotlarini yuboring. ¦ Tune it for 320 and send desktop and mobile screenshots.",
+        "Сделайте обложку в Zero Block из 4 элементов. ¦ Zero Block'da 4 ta elementdan muqova yasang. ¦ Build a 4-element cover in Zero Block.",
+        "Настройте её для телефона. ¦ Uni telefon uchun sozlang. ¦ Set it up for phones.",
       ],
-      takeaway: "Следующая тема — алгоритмы: как сделать длинную программу короче. ¦ Keyingi mavzu — algoritmlar: uzun dasturni qanday qisqartirish mumkin. ¦ Next: algorithms — making a long program shorter.",
-      notes: { say: ["Итог."], min: 2 },
+      takeaway: "Дальше: алгоритмы в Blockly. ¦ Keyingisi: Blockly'da algoritmlar. ¦ Next: algorithms in Blockly.",
+      notes: { min: 2 },
     },
   ],
 });
